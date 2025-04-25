@@ -9,7 +9,9 @@ const Field = () => {
   // Ensure fieldValue can handle null/undefined from Contentful initially
   const [fieldValue, setFieldValue] = useState<string | undefined>(undefined);
 
+
   useEffect(() => {
+    sdk.window.startAutoResizer();
     // Get the initial value of the field
     const initialValue = sdk.field.getValue();
     // Check if it's a string or explicitly null/undefined
