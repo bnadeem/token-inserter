@@ -11,6 +11,7 @@ const Field = () => {
   const [fieldValue, setFieldValue] = useState<string | undefined>(undefined);
 
   useEffect(() => {
+    sdk.window.startAutoResizer();
     const initialValue = sdk.field.getValue();
     if (typeof initialValue === 'string' || initialValue === null || initialValue === undefined) {
       setFieldValue(initialValue ?? undefined);
