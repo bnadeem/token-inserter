@@ -1,16 +1,47 @@
-import { Paragraph } from '@contentful/f36-components';
+import { Heading, Paragraph, Grid, GridItem, Card, Box } from '@contentful/f36-components';
 import { DialogAppSDK } from '@contentful/app-sdk';
-import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
+import { useSDK } from '@contentful/react-apps-toolkit';
+import { useEffect } from 'react';
 
 const Dialog = () => {
   const sdk = useSDK<DialogAppSDK>();
-  /*
-     To use the cma, inject it as follows.
-     If it is not needed, you can remove the next line.
-  */
-  // const cma = useCMA();
+  let tokens: string[] = [];
+  const invocation = sdk.parameters.invocation;
+  if (invocation && Array.isArray((invocation as any).tokens)) {
+    tokens = (invocation as any).tokens;
+  }
 
-  return <Paragraph>Hello Dialog Component (AppId: {sdk.ids.app})</Paragraph>;
+  // autoresize the dialog
+  useEffect(() => {
+    sdk.window.startAutoResizer();
+  }, [sdk]);
+
+  const handleTokenSelect = (token: string) => {
+    sdk.close({ selectedToken: token });
+  };
+
+  return (
+    <Box padding="none" style={{ minWidth: 350, maxWidth: 600 }}>
+      <Heading as="h2" marginBottom="spacingM">Select a token to insert:</Heading>
+      <Grid columns={2}>
+        {tokens.map((token: string) => (
+          <GridItem key={token}>
+            <Card
+              padding="default"
+              style={{ cursor: 'pointer', textAlign: 'center' }}
+              onClick={() => handleTokenSelect(token)}
+              tabIndex={0}
+              role="button"
+              aria-pressed="false"
+              as="button"
+            >
+              <Paragraph fontWeight="fontWeightDemiBold">{token}</Paragraph>
+            </Card>
+          </GridItem>
+        ))}
+      </Grid>
+    </Box>
+  );
 };
 
 export default Dialog;
