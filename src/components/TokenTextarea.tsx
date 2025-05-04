@@ -85,22 +85,6 @@ const Editor = styled.div`
       }
     }
   }
-
-  &::after {
-    content: '';
-    display: inline-block;
-    width: 2px;
-    height: 20px;
-    background: #0045ff;
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-  }
-
-  &.show-drop-indicator::after {
-    opacity: 1;
-  }
 `;
 
 interface TokenTextareaProps {
@@ -216,91 +200,69 @@ const TokenTextarea: React.FC<TokenTextareaProps> = ({
     const token = e.target as HTMLElement;
     token.classList.remove('token-dragging');
     setDraggedToken(null);
-    editorRef.current?.classList.remove('show-drop-indicator');
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     if (!draggedToken) return;
     e.preventDefault();
-    e.stopPropagation();
-
-    const editor = editorRef.current;
-    if (!editor) return;
-
-    // Get the closest text position to the cursor
-    const range = document.caretRangeFromPoint(e.clientX, e.clientY);
-    if (!range) return;
-
-    // Show drop indicator
-    editor.classList.add('show-drop-indicator');
-    const rect = range.getBoundingClientRect();
-    if (editor.style.position !== 'relative') {
-      editor.style.position = 'relative';
-    }
-    const editorRect = editor.getBoundingClientRect();
-    editor.style.setProperty('--drop-indicator-left', `${rect.left - editorRect.left}px`);
-    editor.style.setProperty('--drop-indicator-top', `${rect.top - editorRect.top}px`);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    e.stopPropagation();
-
-    const editor = editorRef.current;
-    if (!editor || !draggedToken) return;
-
-    // Remove drop indicator
-    editor.classList.remove('show-drop-indicator');
+    if (!draggedToken || !editorRef.current) return;
 
     // Get drop position
     const range = document.caretRangeFromPoint(e.clientX, e.clientY);
     if (!range) return;
 
-    // Remove the original token
-    const newValue = value.replace(draggedToken, '');
+    // First, get the current value without the dragged token
+    const valueWithoutDraggedToken = value.replace(draggedToken, '');
+    
+    // Then find the insertion point
+    let insertAt = 0;
+    let currentLength = 0;
+    
+    const walker = document.createTreeWalker(
+      editorRef.current,
+      NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+      null
+    );
 
-    // Insert the token at the new position
-    const selection = window.getSelection();
-    if (selection) {
-      selection.removeAllRanges();
-      selection.addRange(range);
-      
-      // Calculate the insert position based on the selection
-      const beforeText = getTextBeforeRange(range);
-      const afterText = getTextAfterRange(range);
-      
-      // Update the value with the token in its new position
-      onChange(beforeText + draggedToken + afterText);
-    }
-  };
-
-  const getTextBeforeRange = (range: Range): string => {
-    const tempRange = range.cloneRange();
-    tempRange.setStart(editorRef.current!, 0);
-    return extractTextAndTokens(tempRange);
-  };
-
-  const getTextAfterRange = (range: Range): string => {
-    const tempRange = range.cloneRange();
-    tempRange.setEndAfter(editorRef.current!.lastChild!);
-    return extractTextAndTokens(tempRange);
-  };
-
-  const extractTextAndTokens = (range: Range): string => {
-    let text = '';
-    const fragment = range.cloneContents();
-    fragment.childNodes.forEach(node => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        text += node.textContent;
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        const element = node as HTMLElement;
-        const token = element.getAttribute('data-token');
-        if (token) {
-          text += token;
+    let node = walker.nextNode();
+    while (node) {
+      if (node === range.startContainer) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          insertAt = currentLength + range.startOffset;
+          break;
         }
       }
-    });
-    return text;
+      
+      if (node.nodeType === Node.TEXT_NODE) {
+        currentLength += node.textContent?.length || 0;
+      } else if (node.nodeType === Node.ELEMENT_NODE && (node as HTMLElement).hasAttribute('data-token')) {
+        const tokenValue = (node as HTMLElement).getAttribute('data-token');
+        if (tokenValue && tokenValue !== draggedToken) {
+          if (node === range.startContainer) {
+            insertAt = currentLength;
+            break;
+          }
+          currentLength += tokenValue.length;
+        }
+      }
+      node = walker.nextNode();
+    }
+
+    // If we haven't found an insertion point, put it at the end
+    if (insertAt === 0 && currentLength > 0) {
+      insertAt = valueWithoutDraggedToken.length;
+    }
+
+    // Insert the dragged token at the calculated position
+    const newValue = valueWithoutDraggedToken.slice(0, insertAt) + 
+                    draggedToken + 
+                    valueWithoutDraggedToken.slice(insertAt);
+
+    onChange(newValue);
   };
 
   const handleInput = () => {
