@@ -4,6 +4,7 @@ import { useSDK } from '@contentful/react-apps-toolkit';
 import { useEffect, useRef, useState } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import TokenQuillEditor from '../components/TokenQuillEditor';
 
 const Inline = Quill.import('blots/inline') as any;
 
@@ -28,10 +29,10 @@ Quill.register(TokenBlot);
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
   const [value, setValue] = useState('');
-  const quillRef = useRef<ReactQuill>(null);
 
   // Initialize value from Contentful field and listen for external changes
   useEffect(() => {
+    sdk.window.startAutoResizer();
     const initialValue = sdk.field.getValue();
     if (typeof initialValue === 'string') {
       setValue(initialValue);
@@ -48,29 +49,13 @@ const Field = () => {
     sdk.field.setValue(val);
   };
 
-  // Handler to insert a token at the current cursor position
-  const insertToken = (tokenValue: string) => {
-    const quill = quillRef.current?.getEditor();
-    if (quill) {
-      const range = quill.getSelection();
-      if (range) {
-        quill.insertEmbed(range.index, 'token', tokenValue);
-        quill.setSelection(range.index + 1);
-      }
-    }
-  };
-
   return (
     <Flex flexDirection="column" gap="spacingXs">
-      <button onClick={() => insertToken('MyToken')}>Insert Token</button>
-      <ReactQuill
-        ref={quillRef}
+      <TokenQuillEditor
         value={value}
         onChange={handleChange}
-        placeholder={`Enter ${sdk.field.name}... (AppId: ${sdk.ids.app})`}
-        modules={{
-          toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'bullet' }]],
-        }}
+        placeholder="Simple text field"
+        richTextEnabled={false}
       />
     </Flex>
   );
