@@ -1,55 +1,109 @@
-import React, { forwardRef, useImperativeHandle, useRef } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import { Delta } from 'quill';
+import React, { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
+import Quill, { Delta, Range } from 'quill';
 
-export interface EditorProps {
-  readOnly?: boolean;
-  defaultValue?: Delta;
-  onSelectionChange?: (range: any) => void;
-  onTextChange?: (delta: any) => void;
+
+const Inline = Quill.import('blots/inline') as any;
+class TokenBlot extends Inline {
+    static create(value: string) {
+        let node = super.create();
+        node.setAttribute('data-token', value);
+        node.textContent = value;
+        node.addEventListener('click', (e: MouseEvent) => {
+            if (e.target === node && e.offsetX > node.offsetWidth - 20) {
+                node.remove();
+            }
+        });
+        return node;
+    }
+
+    static formats(node: HTMLElement) {
+        return node.getAttribute('data-token');
+    }
+}
+TokenBlot.blotName = 'token';
+TokenBlot.tagName = 'span';
+TokenBlot.className = 'ql-token';
+Quill.register(TokenBlot);
+// Editor is an uncontrolled React component
+
+interface EditorProps {
+    readOnly?: boolean;
+    defaultValue?: Delta;
+    onTextChange?: (delta: Delta, oldContents: Delta, source: string) => void;
+    onSelectionChange?: (range: Range, oldRange: Range, source: string) => void;
 }
 
-export interface EditorRef {
-  getEditor: () => ReactQuill | null;
+interface EditorRef {
+    enable: (enabled: boolean) => void;
+    setContents: (delta: Delta) => void;
 }
 
 const Editor = forwardRef<EditorRef, EditorProps>(({
-  readOnly = false,
-  defaultValue,
-  onSelectionChange,
-  onTextChange
+    readOnly = false,
+    defaultValue = new Delta(),
+    onTextChange,
+    onSelectionChange
 }, ref) => {
-  const quillRef = useRef<ReactQuill>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const defaultValueRef = useRef(defaultValue);
+    const onTextChangeRef = useRef(onTextChange);
+    const onSelectionChangeRef = useRef(onSelectionChange);
+    const quillRef = useRef<Quill | null>(null);
 
-  useImperativeHandle(ref, () => ({
-    getEditor: () => quillRef.current
-  }));
+    useLayoutEffect(() => {
+        onTextChangeRef.current = onTextChange;
+        onSelectionChangeRef.current = onSelectionChange;
+    });
 
-  return (
-    <ReactQuill
-      ref={quillRef}
-      readOnly={readOnly}
-      defaultValue={defaultValue}
-      onChangeSelection={onSelectionChange}
-      onChange={onTextChange}
-      modules={{
-        toolbar: [
-          [{ header: [1, 2, false] }],
-          ['bold', 'italic', 'underline', 'strike'],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          ['link', 'image'],
-          ['clean']
-        ]
-      }}
-      formats={[
-        'header',
-        'bold', 'italic', 'underline', 'strike',
-        'list', 'bullet',
-        'link', 'image'
-      ]}
-    />
-  );
+    useEffect(() => {
+        if (quillRef.current) {
+            quillRef.current.enable(!readOnly);
+        }
+    }, [readOnly]);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const editorContainer = container.appendChild(
+            container.ownerDocument.createElement('div')
+        );
+        const quill = new Quill(editorContainer, {
+            theme: 'snow',
+        });
+
+        quillRef.current = quill;
+
+        if (defaultValueRef.current) {
+            quill.setContents(defaultValueRef.current);
+        }
+
+        quill.on(Quill.events.TEXT_CHANGE, (delta: Delta, oldContents: Delta, source: string) => {
+            onTextChangeRef.current?.(delta, oldContents, source);
+        });
+
+        quill.on(Quill.events.SELECTION_CHANGE, (range: Range, oldRange: Range, source: string) => {
+            onSelectionChangeRef.current?.(range, oldRange, source);
+        });
+
+        if (ref) {
+            (ref as React.MutableRefObject<EditorRef>).current = {
+                enable: (enabled: boolean) => quill.enable(enabled),
+                setContents: (delta: Delta) => quill.setContents(delta)
+            };
+        }
+
+        return () => {
+            quillRef.current = null;
+            container.innerHTML = '';
+        };
+    }, [ref]);
+
+    return <div>
+        <div ref={containerRef}></div>
+        <button onClick={() => {
+        }}>Add Token</button>
+    </div>;
 });
 
 Editor.displayName = 'Editor';

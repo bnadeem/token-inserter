@@ -4,27 +4,25 @@ import { useSDK } from '@contentful/react-apps-toolkit';
 import { useEffect, useRef, useState } from 'react';
 import 'react-quill/dist/quill.snow.css';
 import TokenQuillEditor from '../components/TokenQuillEditor';
-import Editor, { EditorRef } from '../components/Editor';
-import { Delta } from 'quill';
+import Editor from '../components/Editor';
+import Quill, { Delta } from 'quill';
 
 const Field = () => {
-  const editorRef = useRef<EditorRef>(null);
+  const editorRef = useRef<Quill|null>(null);
   const [range, setRange] = useState<any>();
   const [lastChange, setLastChange] = useState<any>();
   const [readOnly, setReadOnly] = useState(false);
+  const sdk = useSDK<FieldAppSDK>();
+
+  useEffect(() => {
+    sdk.window.startAutoResizer();
+  }, []);
+
 
   return (
     <Editor
       ref={editorRef}
-      readOnly={readOnly}
-      defaultValue={new Delta()
-        .insert('Hello')
-        .insert('\n', { header: 1 })
-        .insert('Some ')
-        .insert('initial', { bold: true })
-        .insert(' ')
-        .insert('content', { underline: true })
-        .insert('\n')}
+      defaultValue={new Delta()}
       onSelectionChange={setRange}
       onTextChange={setLastChange}
     />
