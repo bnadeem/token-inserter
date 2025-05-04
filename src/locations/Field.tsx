@@ -1,79 +1,78 @@
-import { Flex, Paragraph, TextInput } from '@contentful/f36-components';
+import { Flex } from '@contentful/f36-components';
 import { FieldAppSDK } from '@contentful/app-sdk';
 import { useSDK } from '@contentful/react-apps-toolkit';
-import { useEffect, useState } from 'react';
-import { TokenSelector } from '../components/TokenSelector';
-import TokenTextarea from '../components/TokenTextarea';
+import { useEffect, useRef, useState } from 'react';
+import ReactQuill, { Quill } from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
+const Inline = Quill.import('blots/inline') as any;
+
+class TokenBlot extends Inline {
+  static create(value: string) {
+    let node = super.create();
+    node.setAttribute('data-token', value);
+    node.classList.add('token-pill');
+    node.innerText = value;
+    return node;
+  }
+
+  static value(node: HTMLElement) {
+    return node.getAttribute('data-token');
+  }
+}
+TokenBlot.blotName = 'token';
+TokenBlot.tagName = 'span';
+
+Quill.register(TokenBlot);
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
-  const [fieldType, setFieldType] = useState<string | null>(null);
-  const [fieldValue, setFieldValue] = useState<string | undefined>(undefined);
+  const [value, setValue] = useState('');
+  const quillRef = useRef<ReactQuill>(null);
 
+  // Initialize value from Contentful field and listen for external changes
   useEffect(() => {
-    sdk.window.startAutoResizer();
     const initialValue = sdk.field.getValue();
-    if (typeof initialValue === 'string' || initialValue === null || initialValue === undefined) {
-      setFieldValue(initialValue ?? undefined);
+    if (typeof initialValue === 'string') {
+      setValue(initialValue);
     }
-
-    const detachValueChangeHandler = sdk.field.onValueChanged((value) => {
-      if (typeof value === 'string' || value === null || value === undefined) {
-        setFieldValue(value ?? undefined);
-      }
+    const detach = sdk.field.onValueChanged((newValue) => {
+      if (typeof newValue === 'string') setValue(newValue);
     });
-
-    setFieldType(sdk.field.type);
-
-    return () => {
-      detachValueChangeHandler();
-    };
+    return () => detach();
   }, [sdk]);
 
-  const handleInputChange = (newValue: string) => {
-    setFieldValue(newValue);
-    sdk.field.setValue(newValue);
+  // Save to Contentful on change
+  const handleChange = (val: string) => {
+    setValue(val);
+    sdk.field.setValue(val);
   };
 
-  const handleTokenSelect = (token: { value: string }) => {
-    const newValue = fieldValue ? `${fieldValue}${token.value}` : token.value;
-    setFieldValue(newValue);
-    sdk.field.setValue(newValue);
+  // Handler to insert a token at the current cursor position
+  const insertToken = (tokenValue: string) => {
+    const quill = quillRef.current?.getEditor();
+    if (quill) {
+      const range = quill.getSelection();
+      if (range) {
+        quill.insertEmbed(range.index, 'token', tokenValue);
+        quill.setSelection(range.index + 1);
+      }
+    }
   };
-
-  if (fieldType === null) {
-    return <Paragraph>Loading field information...</Paragraph>;
-  }
-
-  if (fieldType === 'Text') {
-    return (
-      <Flex flexDirection="column" gap="spacingXs">
-        <TokenSelector onTokenSelect={handleTokenSelect} />
-        <TokenTextarea
-          value={fieldValue || ''}
-          onChange={handleInputChange}
-          placeholder={`Enter ${sdk.field.name}... (AppId: ${sdk.ids.app})`}
-          rows={4}
-        />
-      </Flex>
-    );
-  }
-
-  if (fieldType === 'Symbol') {
-    return (
-      <TextInput
-        value={fieldValue || ''}
-        onChange={(e) => handleInputChange(e.target.value)}
-        placeholder={`Enter ${sdk.field.name}... (AppId: ${sdk.ids.app})`}
-        style={{ marginTop: '10px' }}
-      />
-    );
-  }
 
   return (
-    <Paragraph>
-      Field Type: {fieldType} (AppId: {sdk.ids.app}) - Value: {fieldValue ?? '(empty)'}
-    </Paragraph>
+    <Flex flexDirection="column" gap="spacingXs">
+      <button onClick={() => insertToken('MyToken')}>Insert Token</button>
+      <ReactQuill
+        ref={quillRef}
+        value={value}
+        onChange={handleChange}
+        placeholder={`Enter ${sdk.field.name}... (AppId: ${sdk.ids.app})`}
+        modules={{
+          toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'bullet' }]],
+        }}
+      />
+    </Flex>
   );
 };
 
