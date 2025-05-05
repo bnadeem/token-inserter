@@ -11,7 +11,21 @@ class TokenBlot extends Embed {
         let node = super.create();
         node.setAttribute('data-token', JSON.stringify(value));
         node.classList.add('ql-token');
-        node.textContent = value.name; // Show the friendly name
+        node.textContent = `${value.name} (${value.type})`;
+
+        // Color by type
+        if (value.type === 'RP') {
+            node.style.background = '#e0f7fa'; // light blue
+            node.style.color = '#00796b';     // teal text
+        } else if (value.type === 'AB') {
+            node.style.background = '#fff3e0'; // light orange
+            node.style.color = '#e65100';      // deep orange text
+        }
+        node.style.padding = '2px 8px';
+        node.style.borderRadius = '6px';
+        node.style.margin = '0 2px';
+        node.style.display = 'inline-flex';
+        node.style.alignItems = 'center';
 
         // Create the "x" button
         const closeBtn = document.createElement('span');
