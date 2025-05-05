@@ -54,7 +54,7 @@ const Dialog = () => {
     : tokens.filter(token => token.type.name.trim() === selectedType);
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: 24, height: '700px', display: 'flex', flexDirection: 'column' }}>
       <Heading as="h2" marginBottom="spacingM">Select a Token</Heading>
       <TextInput
         value={search}
@@ -72,22 +72,24 @@ const Dialog = () => {
         </Tabs.List>
       </Tabs>
       <div style={{ height: 16 }} />
-      <Grid columns={1} rowGap="spacingM">
-        {filteredTokens.map((token) => (
-          <GridItem key={token.id}>
-            <EntryCard
-              title={token.name}
-              contentType={token.type.name}
-              onClick={() => handleTokenSelect(token)}
-              style={{
-                cursor: 'pointer',
-                borderLeft: `8px solid ${token.type.color}`,
-                background: '#fff',
-              }}
-            />
-          </GridItem>
-        ))}
-      </Grid>
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        <Grid columns={1} rowGap="spacingM">
+          {filteredTokens.map((token) => (
+            <GridItem key={token.id}>
+              <EntryCard
+                title={token.name}
+                contentType={token.type.name}
+                onClick={() => handleTokenSelect(token)}
+                style={{
+                  cursor: 'pointer',
+                  borderLeft: `8px solid ${token.type.color}`,
+                  background: '#fff',
+                }}
+              />
+            </GridItem>
+          ))}
+        </Grid>
+      </div>
       {loading && <div style={{ marginTop: 16 }}>Searching...</div>}
     </div>
   );
