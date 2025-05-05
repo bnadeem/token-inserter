@@ -51,7 +51,7 @@ Quill.register(TokenBlot);
 interface EditorProps {
     readOnly?: boolean;
     defaultValue?: Delta;
-    onTextChange?: (delta: Delta, oldContents: Delta, source: string) => void;
+    onTextChange?: (text: string) => void;
     onSelectionChange?: (range: Range, oldRange: Range, source: string) => void;
 }
 
@@ -100,7 +100,6 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
         }
 
         quill.on(Quill.events.TEXT_CHANGE, (delta: Delta, oldContents: Delta, source: string) => {
-            onTextChangeRef.current?.(delta, oldContents, source);
             let result = '';
             const fullDelta = quill.getContents();
             fullDelta.ops.forEach(op => {
@@ -111,6 +110,7 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
                 }
             });
             console.log(result);
+            onTextChangeRef.current?.(result);
         });
 
         quill.on(Quill.events.SELECTION_CHANGE, (range: Range, oldRange: Range, source: string) => {
