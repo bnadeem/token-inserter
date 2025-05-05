@@ -36,4 +36,23 @@ export class TokenRepository {
       type: item.fields.type as string,
     }));
   }
+
+  /**
+   * Search for tokens by a query string.
+   * This will search in the name, id, description, and type fields.
+   */
+  async searchTokens(query: string): Promise<TokenEntry[]> {
+    const entries = await this.client.getEntries({
+      content_type: 'token',
+      limit: 1000,
+      query, // This will search all full-text fields
+    });
+
+    return entries.items.map((item: Entry<any>) => ({
+      id: item.fields.id as string,
+      name: item.fields.name as string,
+      description: item.fields.description as string | undefined,
+      type: item.fields.type as string,
+    }));
+  }
 }
