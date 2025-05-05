@@ -1,4 +1,4 @@
-import { Heading, Grid, GridItem, EntryCard, TextInput } from '@contentful/f36-components';
+import { Heading, Grid, GridItem, EntryCard, TextInput, Tabs } from '@contentful/f36-components';
 import { DialogAppSDK } from '@contentful/app-sdk';
 import { useSDK } from '@contentful/react-apps-toolkit';
 import { useEffect, useState, useRef } from 'react';
@@ -13,6 +13,7 @@ const Dialog = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const [selectedType, setSelectedType] = useState<string>('All');
 
   useEffect(() => {
     sdk.window.startAutoResizer();
@@ -44,6 +45,14 @@ const Dialog = () => {
     sdk.close(token);
   };
 
+  const tokenTypes = Array.from(new Set(tokens.map(token => token.type.name.trim())));
+
+  const handleTabChange = (tabId: string) => setSelectedType(tabId);
+
+  const filteredTokens = selectedType === 'All'
+    ? tokens
+    : tokens.filter(token => token.type.name.trim() === selectedType);
+
   return (
     <div style={{ padding: 24 }}>
       <Heading as="h2" marginBottom="spacingM">Select a Token</Heading>
@@ -54,8 +63,16 @@ const Dialog = () => {
         isDisabled={loading}
         style={{ marginBottom: 16 }}
       />
+      <Tabs currentTab={selectedType} onTabChange={setSelectedType}>
+        <Tabs.List>
+          <Tabs.Tab panelId="All">All</Tabs.Tab>
+          {tokenTypes.map(type => (
+            <Tabs.Tab key={type} panelId={type}>{type}</Tabs.Tab>
+          ))}
+        </Tabs.List>
+      </Tabs>
       <Grid columns={1} rowGap="spacingM">
-        {tokens.map((token) => (
+        {filteredTokens.map((token) => (
           <GridItem key={token.id}>
             <EntryCard
               title={token.name}
