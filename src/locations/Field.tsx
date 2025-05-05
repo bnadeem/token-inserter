@@ -16,7 +16,6 @@ const Field = () => {
   }, []);
 
   const handleTextChange = (text: string) => {
-    console.log('handleTextChange', text);
     sdk.field.setValue(text);
   };
 
@@ -25,6 +24,7 @@ const Field = () => {
     <Editor
       defaultValue={sdk.field.getValue()}
       onTextChange={handleTextChange}
+      showToolbar={sdk.field.type !== 'Symbol'}
     />
   );
 };

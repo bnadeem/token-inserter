@@ -2,24 +2,24 @@ import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import Quill, { Delta } from 'quill';
 import { FieldAppSDK } from '@contentful/app-sdk';
 import { useSDK } from '@contentful/react-apps-toolkit';
-
+import { Token } from '../Models/Token';
 const Embed = Quill.import('blots/embed') as any;
 
 // TokenBlot now stores and renders token objects
 class TokenBlot extends Embed {
-    static create(value: { type: string; id: string; name: string }) {
+    static create(value: Token) {
         let node = super.create();
         node.setAttribute('data-token', JSON.stringify(value));
         node.classList.add('ql-token');
-        node.textContent = `${value.name} (${value.type})`;
+        node.textContent = `${value.name} (${value.type.id})`;
 
         // Color by type
-        if (value.type === 'RP') {
-            node.style.background = '#e0f7fa'; // light blue
-            node.style.color = '#00796b';     // teal text
-        } else if (value.type === 'AB') {
-            node.style.background = '#fff3e0'; // light orange
-            node.style.color = '#e65100';      // deep orange text
+        if (value.type.id === 'RP') {
+            node.style.background = value.type.color;
+            node.style.color = 'black';     // teal text
+        } else if (value.type.id === 'AB') {
+            node.style.background = value.type.color;
+            node.style.color = 'black';      // deep orange text
         }
         node.style.padding = '2px 8px';
         node.style.borderRadius = '6px';
@@ -70,11 +70,6 @@ interface TokenObj {
     name: string;
 }
 
-interface EditorProps {
-    defaultValue?: string;
-    onTextChange?: (text: string) => void;
-}
-
 // Parse [TOKEN:{...}] into Delta with token objects
 function parseStringToDelta(str: string) {
     const ops = [];
@@ -102,8 +97,17 @@ function parseStringToDelta(str: string) {
     return { ops };
 }
 
+interface EditorProps {
+    defaultValue?: string;
+    showToolbar?: boolean;
+    onTextChange?: (text: string) => void;
+}
+
+
+
 const Editor = ({
     defaultValue = '',
+    showToolbar = true,
     onTextChange,
 }: EditorProps) => {
     const onTextChangeRef = useRef(onTextChange);
@@ -118,7 +122,7 @@ const Editor = ({
         const quill = new Quill('#editor', {
             theme: 'snow',
             modules: {
-                toolbar: false,
+                toolbar: showToolbar,
             }
         });
         quillRef.current = quill;

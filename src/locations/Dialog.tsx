@@ -2,13 +2,14 @@ import { Heading, Grid, GridItem, EntryCard, TextInput } from '@contentful/f36-c
 import { DialogAppSDK } from '@contentful/app-sdk';
 import { useSDK } from '@contentful/react-apps-toolkit';
 import { useEffect, useState, useRef } from 'react';
-import { TokenRepository, TokenEntry } from '../repositories/TokenRepository';
+import { TokenRepository } from '../repositories/TokenRepository';
+import { Token } from '../Models/Token';
 
 const tokenRepository = new TokenRepository();
 
 const Dialog = () => {
   const sdk = useSDK<DialogAppSDK>();
-  const [tokens, setTokens] = useState<TokenEntry[]>([]);
+  const [tokens, setTokens] = useState<Token[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -39,7 +40,7 @@ const Dialog = () => {
     };
   }, [search]);
 
-  const handleTokenSelect = (token: TokenEntry) => {
+  const handleTokenSelect = (token: Token) => {
     sdk.close(token);
   };
 
@@ -58,8 +59,7 @@ const Dialog = () => {
           <GridItem key={token.id}>
             <EntryCard
               title={token.name}
-              description={token.description || ''}
-              contentType={token.type}
+              contentType={token.type.name}
               onClick={() => handleTokenSelect(token)}
               style={{ cursor: 'pointer' }}
             />
