@@ -2,21 +2,17 @@ import React, { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 
 import Quill, { Delta, Range } from 'quill';
 
 
-const Inline = Quill.import('blots/inline') as any;
-class TokenBlot extends Inline {
+const Embed = Quill.import('blots/embed') as any;
+class TokenBlot extends Embed {
     static create(value: string) {
         let node = super.create();
         node.setAttribute('data-token', value);
         node.textContent = value;
-        node.addEventListener('click', (e: MouseEvent) => {
-            if (e.target === node && e.offsetX > node.offsetWidth - 20) {
-                node.remove();
-            }
-        });
+        node.classList.add('ql-token');
         return node;
     }
 
-    static formats(node: HTMLElement) {
+    static value(node: HTMLElement) {
         return node.getAttribute('data-token');
     }
 }
@@ -104,8 +100,12 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
         if (!quill) return;
         const range = quill.getSelection(true);
         if (range) {
-            quill.insertText(range.index, ' ', 'token', '{{token}}');
-            quill.setSelection(range.index + '{{token}}'.length + 1, 0, 'user');
+            // Insert the token as an embed
+            quill.insertEmbed(range.index, 'token', '{{token}}');
+            // Insert a zero-width space after the token
+            quill.insertText(range.index + 1, '\u200B');
+            // Move cursor after the zero-width space
+            quill.setSelection(range.index + 2, 0);
         }
     };
 
