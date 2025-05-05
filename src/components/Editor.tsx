@@ -5,12 +5,13 @@ import { useSDK } from '@contentful/react-apps-toolkit';
 
 const Embed = Quill.import('blots/embed') as any;
 
+// TokenBlot now stores and renders token objects
 class TokenBlot extends Embed {
-    static create(value: string) {
+    static create(value: { type: string; id: string; name: string }) {
         let node = super.create();
-        node.setAttribute('data-token', value);
+        node.setAttribute('data-token', JSON.stringify(value));
         node.classList.add('ql-token');
-        node.textContent = value;
+        node.textContent = value.name; // Show the friendly name
 
         // Create the "x" button
         const closeBtn = document.createElement('span');
@@ -25,7 +26,6 @@ class TokenBlot extends Embed {
         // Remove the token when "x" is clicked
         closeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            // Find the Quill instance from the window (set in the React component)
             const quill = (window as any).quillRefInstance;
             if (quill) {
                 const blot: any = Quill.find(node);
@@ -41,7 +41,8 @@ class TokenBlot extends Embed {
     }
 
     static value(node: HTMLElement) {
-        return node.getAttribute('data-token');
+        const data = node.getAttribute('data-token');
+        return data ? JSON.parse(data) : {};
     }
 }
 TokenBlot.blotName = 'token';
@@ -49,15 +50,21 @@ TokenBlot.tagName = 'span';
 TokenBlot.className = 'ql-token';
 Quill.register(TokenBlot);
 
+interface TokenObj {
+    type: string;
+    id: string;
+    name: string;
+}
+
 interface EditorProps {
     defaultValue?: string;
     onTextChange?: (text: string) => void;
 }
 
+// Parse [TOKEN:{...}] into Delta with token objects
 function parseStringToDelta(str: string) {
     const ops = [];
-    // Regex to match [TOKEN:{{token}}]
-    const tokenRegex = /\[TOKEN:({{token}})\]/g;
+    const tokenRegex = /\[TOKEN:({.*?})\]/g;
     let lastIndex = 0;
     let match;
 
@@ -65,8 +72,14 @@ function parseStringToDelta(str: string) {
         if (match.index > lastIndex) {
             ops.push({ insert: str.slice(lastIndex, match.index) });
         }
-        ops.push({ insert: { token: match[1] } });
-        ops.push({ insert: '\u200B' }); // Optional: add a zero-width space after token
+        try {
+            const tokenObj = JSON.parse(match[1]);
+            ops.push({ insert: { token: tokenObj } });
+            ops.push({ insert: '\u200B' });
+        } catch (e) {
+            // If parsing fails, insert as plain text
+            ops.push({ insert: match[0] });
+        }
         lastIndex = match.index + match[0].length;
     }
     if (lastIndex < str.length) {
@@ -109,7 +122,7 @@ const Editor = ({
                 if (typeof op.insert === 'string') {
                     result += op.insert;
                 } else if (op.insert?.token) {
-                    result += `[TOKEN:${op.insert.token}]`;
+                    result += `[TOKEN:${JSON.stringify(op.insert.token)}]`;
                 }
             });
             onTextChangeRef.current?.(result);
@@ -123,17 +136,23 @@ const Editor = ({
     }, [defaultValue]);
 
     // Handler to insert a token at the current cursor position
-    const handleAddToken = () => {
-
+    const handleAddToken = async () => {
+        // MOCK: Replace this with your real dialog logic
+        // Simulate selecting a token
+        const selectedToken: TokenObj = {
+            type: 'basic',
+            id: 'firstName',
+            name: 'First Name',
+        };
+        // If using Contentful dialog, use:
+        // const selectedToken = await sdk.dialogs.openCurrentApp({ ... });
+        if (!selectedToken) return;
         const quill = quillRef.current;
         if (!quill) return;
         const range = quill.getSelection(true);
         if (range) {
-            // Insert the token as an embed
-            quill.insertEmbed(range.index, 'token', '{{token}}');
-            // Insert a zero-width space after the token
+            quill.insertEmbed(range.index, 'token', selectedToken);
             quill.insertText(range.index + 1, '\u200B');
-            // Move cursor after the zero-width space
             quill.setSelection(range.index + 2, 0);
         }
     };
