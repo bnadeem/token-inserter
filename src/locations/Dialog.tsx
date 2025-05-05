@@ -23,8 +23,7 @@ const Dialog = () => {
   };
 
   return (
-    <Box padding="none" style={{ minWidth: 350, maxWidth: 600 }}>
-      <Heading as="h2" marginBottom="spacingM">Select a token to insert:</Heading>
+    <Box className="w-full h-full p-4">
       <Grid columns={2}>
         {tokens.map((token: { type: string; id: string; name: string }) => (
           <GridItem key={token.id}>
