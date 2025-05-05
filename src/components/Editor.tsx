@@ -1,8 +1,8 @@
-import React, { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import Quill, { Delta, Range } from 'quill';
-
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
+import Quill, { Delta } from 'quill';
 
 const Embed = Quill.import('blots/embed') as any;
+
 class TokenBlot extends Embed {
     static create(value: string) {
         let node = super.create();
@@ -46,42 +46,43 @@ TokenBlot.blotName = 'token';
 TokenBlot.tagName = 'span';
 TokenBlot.className = 'ql-token';
 Quill.register(TokenBlot);
-// Editor is an uncontrolled React component
 
 interface EditorProps {
-    readOnly?: boolean;
-    defaultValue?: Delta;
+    defaultValue?: string;
     onTextChange?: (text: string) => void;
-    onSelectionChange?: (range: Range, oldRange: Range, source: string) => void;
 }
 
-interface EditorRef {
-    enable: (enabled: boolean) => void;
-    setContents: (delta: Delta) => void;
+function parseStringToDelta(str: string) {
+    const ops = [];
+    // Regex to match [TOKEN:{{token}}]
+    const tokenRegex = /\[TOKEN:({{token}})\]/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = tokenRegex.exec(str)) !== null) {
+        if (match.index > lastIndex) {
+            ops.push({ insert: str.slice(lastIndex, match.index) });
+        }
+        ops.push({ insert: { token: match[1] } });
+        ops.push({ insert: '\u200B' }); // Optional: add a zero-width space after token
+        lastIndex = match.index + match[0].length;
+    }
+    if (lastIndex < str.length) {
+        ops.push({ insert: str.slice(lastIndex) });
+    }
+    return { ops };
 }
 
-const Editor = forwardRef<EditorRef, EditorProps>(({
-    readOnly = false,
-    defaultValue = new Delta(),
+const Editor = ({
+    defaultValue = '',
     onTextChange,
-    onSelectionChange
-}, ref) => {
-    const defaultValueRef = useRef(defaultValue);
+}: EditorProps) => {
     const onTextChangeRef = useRef(onTextChange);
-    const onSelectionChangeRef = useRef(onSelectionChange);
     const quillRef = useRef<Quill | null>(null);
-    const [_, forceUpdate] = useState(0); // To force re-render for selection
 
     useLayoutEffect(() => {
         onTextChangeRef.current = onTextChange;
-        onSelectionChangeRef.current = onSelectionChange;
     });
-
-    useEffect(() => {
-        if (quillRef.current) {
-            quillRef.current.enable(!readOnly);
-        }
-    }, [readOnly]);
 
     useEffect(() => {
         const quill = new Quill('#editor', {
@@ -90,16 +91,15 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
                 toolbar: false,
             }
         });
-
         quillRef.current = quill;
-        // Expose the Quill instance globally for the blot to access
         (window as any).quillRefInstance = quill;
 
-        if (defaultValueRef.current) {
-            quill.setContents(defaultValueRef.current);
+        if (defaultValue) {
+            const delta = parseStringToDelta(defaultValue);
+            quill.setContents(new Delta(delta.ops));
         }
 
-        quill.on(Quill.events.TEXT_CHANGE, (delta: Delta, oldContents: Delta, source: string) => {
+        quill.on(Quill.events.TEXT_CHANGE, () => {
             let result = '';
             const fullDelta = quill.getContents();
             fullDelta.ops.forEach(op => {
@@ -112,22 +112,12 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
             onTextChangeRef.current?.(result);
         });
 
-        quill.on(Quill.events.SELECTION_CHANGE, (range: Range, oldRange: Range, source: string) => {
-            onSelectionChangeRef.current?.(range, oldRange, source);
-            forceUpdate(n => n + 1); // To update selection state if needed
-        });
-
-        if (ref) {
-            (ref as React.MutableRefObject<EditorRef>).current = {
-                enable: (enabled: boolean) => quill.enable(enabled),
-                setContents: (delta: Delta) => quill.setContents(delta)
-            };
-        }
-
+        // Cleanup
         return () => {
             quillRef.current = null;
+            (window as any).quillRefInstance = null;
         };
-    }, [ref]);
+    }, [defaultValue]);
 
     // Handler to insert a token at the current cursor position
     const handleAddToken = () => {
@@ -158,7 +148,7 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
             </div>
         </div>
     );
-});
+};
 
 Editor.displayName = 'Editor';
 

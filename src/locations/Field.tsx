@@ -17,14 +17,13 @@ const Field = () => {
 
   const handleTextChange = (text: string) => {
     console.log('handleTextChange', text);
+    sdk.field.setValue(text);
   };
 
 
   return (
     <Editor
-      ref={editorRef}
-      defaultValue={new Delta()}
-      onSelectionChange={setRange}
+      defaultValue={sdk.field.getValue()}
       onTextChange={handleTextChange}
     />
   );
