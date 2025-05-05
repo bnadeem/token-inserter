@@ -62,6 +62,51 @@ export class TokenRepository {
     });
   }
 
+  async getTokenById(id: string): Promise<Token | undefined> {
+    const entries = await this.client.getEntries<TokenSkeleton>({
+      content_type: 'token',
+      include: 2,
+      'fields.id': id,
+    });
+
+    if (entries.items.length === 0) {
+      return undefined;
+    }
+
+    const token = entries.items[0];
+    const tokenTypeEntry = token.fields.type as Entry<TokenTypeSkeleton>;
+    return {
+      id: getString(token.fields.id)!,
+      name: getString(token.fields.name)!,
+      type: {
+        id: getString(tokenTypeEntry.fields.id)!,
+        name: getString(tokenTypeEntry.fields.name)!,
+        color: getString(tokenTypeEntry.fields.color)!,
+      },
+    };
+  }
+
+  async getTokensByIds(ids: string[]): Promise<Token[]> {
+    const entries = await this.client.getEntries<TokenSkeleton>({
+      content_type: 'token',
+      include: 2,
+      'fields.id[in]': ids,
+    });
+
+    return entries.items.map((item: Entry<TokenSkeleton>) => {
+      const tokenTypeEntry = item.fields.type as Entry<TokenTypeSkeleton>;
+      return {
+        id: getString(item.fields.id)!,
+        name: getString(item.fields.name)!,
+        type: {
+          id: getString(tokenTypeEntry.fields.id)!,
+          name: getString(tokenTypeEntry.fields.name)!,
+          color: getString(tokenTypeEntry.fields.color)!,
+        },
+      };
+    });
+  }
+
   /**
    * Search for tokens by a query string.
    * This will search in the name, id, description, and type fields.

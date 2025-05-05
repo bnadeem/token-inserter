@@ -3,13 +3,17 @@ import Quill, { Delta } from 'quill';
 import { FieldAppSDK } from '@contentful/app-sdk';
 import { useSDK } from '@contentful/react-apps-toolkit';
 import { Token } from '../Models/Token';
+import { TokenRepository } from '../repositories/TokenRepository';
 const Embed = Quill.import('blots/embed') as any;
+
+const tokenRepository = new TokenRepository();
 
 // TokenBlot now stores and renders token objects
 class TokenBlot extends Embed {
     static create(value: Token) {
         let node = super.create();
         node.setAttribute('data-token', JSON.stringify(value));
+        node.setAttribute('data-token-id', value.id);
         node.classList.add('ql-token');
         node.textContent = `${value.name} (${value.type.id})`;
 
@@ -71,7 +75,7 @@ interface TokenObj {
 }
 
 // Parse [TOKEN:{...}] into Delta with token objects
-function parseStringToDelta(str: string) {
+async function parseStringToDelta(str: string) {
     const ops = [];
     const tokenRegex = /\[TOKEN:({.*?})\]/g;
     let lastIndex = 0;
@@ -83,7 +87,9 @@ function parseStringToDelta(str: string) {
         }
         try {
             const tokenObj = JSON.parse(match[1]);
-            ops.push({ insert: { token: tokenObj } });
+            const realToken = await tokenRepository.getTokenById(tokenObj.id);
+            console.log('realToken', realToken);
+            ops.push({ insert: { token: realToken } });
             ops.push({ insert: '\u200B' });
         } catch (e) {
             // If parsing fails, insert as plain text
@@ -119,38 +125,45 @@ const Editor = ({
     });
 
     useEffect(() => {
-        const quill = new Quill('#editor', {
-            theme: 'snow',
-            modules: {
-                toolbar: showToolbar,
-            }
-        });
-        quillRef.current = quill;
-        (window as any).quillRefInstance = quill;
 
-        if (defaultValue) {
-            const delta = parseStringToDelta(defaultValue);
-            quill.setContents(new Delta(delta.ops));
-        }
-
-        quill.on(Quill.events.TEXT_CHANGE, () => {
-            let result = '';
-            const fullDelta = quill.getContents();
-            fullDelta.ops.forEach(op => {
-                if (typeof op.insert === 'string') {
-                    result += op.insert;
-                } else if (op.insert?.token) {
-                    result += `[TOKEN:${JSON.stringify(op.insert.token)}]`;
+        const runAsync = async () => {
+            const quill = new Quill('#editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: showToolbar,
                 }
             });
-            onTextChangeRef.current?.(result);
-        });
+            quillRef.current = quill;
+            (window as any).quillRefInstance = quill;
 
-        // Cleanup
-        return () => {
-            quillRef.current = null;
-            (window as any).quillRefInstance = null;
-        };
+            if (defaultValue) {
+                const delta = await parseStringToDelta(defaultValue);
+                quill.setContents(new Delta(delta.ops));
+            }
+
+            quill.on(Quill.events.TEXT_CHANGE, () => {
+                let result = '';
+                const fullDelta = quill.getContents();
+                fullDelta.ops.forEach(op => {
+                    if (typeof op.insert === 'string') {
+                        result += op.insert;
+                    } else if (op.insert?.token) {
+                        result += `[TOKEN:${JSON.stringify(op.insert.token)}]`;
+                    }
+                });
+                onTextChangeRef.current?.(result);
+            });
+
+            // Cleanup
+            return () => {
+                quillRef.current = null;
+                (window as any).quillRefInstance = null;
+            };
+
+        }
+        runAsync();
+
+
     }, [defaultValue]);
 
     // Handler to insert a token at the current cursor position
