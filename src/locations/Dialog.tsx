@@ -61,7 +61,11 @@ const Dialog = () => {
               title={token.name}
               contentType={token.type.name}
               onClick={() => handleTokenSelect(token)}
-              style={{ cursor: 'pointer' }}
+              style={{
+                cursor: 'pointer',
+                borderLeft: `8px solid ${token.type.color}`,
+                background: '#fff',
+              }}
             />
           </GridItem>
         ))}
