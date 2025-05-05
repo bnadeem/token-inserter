@@ -42,8 +42,7 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
     readOnly = false,
     defaultValue = new Delta(),
     onTextChange,
-    onSelectionChange,
-    range
+    onSelectionChange
 }, ref) => {
     const defaultValueRef = useRef(defaultValue);
     const onTextChangeRef = useRef(onTextChange);
@@ -78,7 +77,7 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
 
         quill.on(Quill.events.TEXT_CHANGE, (delta: Delta, oldContents: Delta, source: string) => {
             onTextChangeRef.current?.(delta, oldContents, source);
-            quill.insertText(range.index, ' ', 'token', tokenName);
+         
 
         });
 
@@ -105,7 +104,7 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
         if (!quill) return;
         const range = quill.getSelection(true);
         if (range) {
-            quill.insertText(range.index, '{{token}}', 'user');
+            quill.insertText(range.index, ' ', 'token', '{{token}}');
             quill.setSelection(range.index + '{{token}}'.length, 0, 'user');
         }
     };
