@@ -1,3 +1,22 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+.ql-token {
+    display: inline-flex;
+    align-items: center;
+    background: #ebf5ff;
+    color: #0045ff;
+    border-radius: 3px;
+    padding: 0 8px;
+    height: 26px;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 2px;
+    vertical-align: middle;
+    user-select: none;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 0 1px #cfd9e0;
+    transition: box-shadow 0.2s;
+  }
+  
+  .ql-token:hover {
+    box-shadow: 0 0 0 2px #0045ff33;
+  }
