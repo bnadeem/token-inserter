@@ -101,8 +101,16 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
 
         quill.on(Quill.events.TEXT_CHANGE, (delta: Delta, oldContents: Delta, source: string) => {
             onTextChangeRef.current?.(delta, oldContents, source);
-
-
+            let result = '';
+            const fullDelta = quill.getContents();
+            fullDelta.ops.forEach(op => {
+                if (typeof op.insert === 'string') {
+                    result += op.insert;
+                } else if (op.insert?.token) {
+                    result += `[TOKEN:${op.insert.token}]`;
+                }
+            });
+            console.log(result);
         });
 
         quill.on(Quill.events.SELECTION_CHANGE, (range: Range, oldRange: Range, source: string) => {

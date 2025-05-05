@@ -15,13 +15,17 @@ const Field = () => {
     sdk.window.startAutoResizer();
   }, []);
 
+  const handleTextChange = (delta: Delta, oldContents: Delta, source: string) => {
+    //get the new content as text
+  };
+
 
   return (
     <Editor
       ref={editorRef}
       defaultValue={new Delta()}
       onSelectionChange={setRange}
-      onTextChange={setLastChange}
+      onTextChange={handleTextChange}
     />
   );
 };
