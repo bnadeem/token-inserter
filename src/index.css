@@ -87,16 +87,40 @@ input:checked+.slider:before {
 
 /* Custom styles for tokens/pills */
 .ql-token {
-    background-color: #f1f3f5;
-    border-radius: 6px;
-    padding: 2px 8px;
-    margin: 0 2px;
-    white-space: nowrap;
     display: inline-flex;
     align-items: center;
+    background: #f1f5fa;
+    color: #1a237e;
+    border-radius: 16px;
+    padding: 0 10px;
+    height: 28px;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 4px;
+    vertical-align: middle;
+    user-select: none;
     cursor: default;
+    border: 1px solid #dbeafe;
+    box-shadow: 0 1px 2px 0 #e3e8f0;
+    transition: box-shadow 0.2s, border 0.2s;
+    gap: 6px;
 }
 
+.ql-token span:last-child {
+    opacity: 0.5;
+    margin-left: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.ql-token:hover span:last-child {
+    opacity: 1;
+}
+
+.ql-token span:first-child {
+    margin-right: 2px;
+}
 
 /* Remove the dots */
 .ql-token::before {
@@ -223,4 +247,18 @@ input:checked+.slider:before {
 
 .debug-panel h4 {
     margin: 1rem 0 0.5rem;
+}
+
+.ql-editor {
+    background: #fff;
+    border-radius: 10px;
+    min-height: 120px;
+    padding: 10px;
+    font-size: 15px;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+.ql-editor:focus-within {
+    border: 1.5px solid #2563eb;
+    box-shadow: 0 0 0 2px #2563eb22;
 }

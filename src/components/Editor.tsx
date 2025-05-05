@@ -146,7 +146,7 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
             >
                 Add Token
             </button>
-            <div id="editor-container" className="w-full h-[200px]">
+            <div id="editor-container" className="w-full ">
                 <div id="editor" className="w-full h-full border"></div>
             </div>
         </div>
