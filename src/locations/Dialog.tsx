@@ -3,29 +3,31 @@ import { DialogAppSDK } from '@contentful/app-sdk';
 import { useSDK } from '@contentful/react-apps-toolkit';
 import { useEffect } from 'react';
 
+const tokens = [
+  { type: 'RP', id: 'firstName', name: 'First Name' },
+  { type: 'RP', id: 'lastName', name: 'Last Name' },
+  { type: 'RP', id: 'email', name: 'Email' },
+  { type: 'RP', id: 'phone', name: 'Phone' },
+];
+
 const Dialog = () => {
   const sdk = useSDK<DialogAppSDK>();
-  let tokens: string[] = [];
-  const invocation = sdk.parameters.invocation;
-  if (invocation && Array.isArray((invocation as any).tokens)) {
-    tokens = (invocation as any).tokens;
-  }
 
   // autoresize the dialog
   useEffect(() => {
     sdk.window.startAutoResizer();
   }, [sdk]);
 
-  const handleTokenSelect = (token: string) => {
-    sdk.close({ selectedToken: token });
+  const handleTokenSelect = (token: { type: string; id: string; name: string }) => {
+    sdk.close(token );
   };
 
   return (
     <Box padding="none" style={{ minWidth: 350, maxWidth: 600 }}>
       <Heading as="h2" marginBottom="spacingM">Select a token to insert:</Heading>
       <Grid columns={2}>
-        {tokens.map((token: string) => (
-          <GridItem key={token}>
+        {tokens.map((token: { type: string; id: string; name: string }) => (
+          <GridItem key={token.id}>
             <Card
               padding="default"
               style={{ cursor: 'pointer', textAlign: 'center' }}
@@ -35,7 +37,7 @@ const Dialog = () => {
               aria-pressed="false"
               as="button"
             >
-              <Paragraph fontWeight="fontWeightDemiBold">{token}</Paragraph>
+              <Paragraph fontWeight="fontWeightDemiBold">{token.name}</Paragraph>
             </Card>
           </GridItem>
         ))}

@@ -139,11 +139,10 @@ const Editor = ({
     const handleAddToken = async () => {
         // MOCK: Replace this with your real dialog logic
         // Simulate selecting a token
-        const selectedToken: TokenObj = {
-            type: 'basic',
-            id: 'firstName',
-            name: 'First Name',
-        };
+
+        const selectedToken = await sdk.dialogs.openCurrentApp({
+            title: 'Select a Token',
+        });
         // If using Contentful dialog, use:
         // const selectedToken = await sdk.dialogs.openCurrentApp({ ... });
         if (!selectedToken) return;
