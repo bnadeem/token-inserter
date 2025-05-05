@@ -7,8 +7,34 @@ class TokenBlot extends Embed {
     static create(value: string) {
         let node = super.create();
         node.setAttribute('data-token', value);
-        node.textContent = value;
         node.classList.add('ql-token');
+        node.textContent = value;
+
+        // Create the "x" button
+        const closeBtn = document.createElement('span');
+        closeBtn.textContent = '×';
+        closeBtn.style.marginLeft = '8px';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.userSelect = 'none';
+
+        // Prevent the editor from losing focus when clicking the "x"
+        closeBtn.addEventListener('mousedown', (e) => e.preventDefault());
+
+        // Remove the token when "x" is clicked
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Find the Quill instance from the window (set in the React component)
+            const quill = (window as any).quillRefInstance;
+            if (quill) {
+                const blot: any = Quill.find(node);
+                if (blot && typeof blot.offset === 'function') {
+                    const index = blot.offset(quill.scroll);
+                    quill.deleteText(index, 1, 'user');
+                }
+            }
+        });
+
+        node.appendChild(closeBtn);
         return node;
     }
 
@@ -66,6 +92,8 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
         });
 
         quillRef.current = quill;
+        // Expose the Quill instance globally for the blot to access
+        (window as any).quillRefInstance = quill;
 
         if (defaultValueRef.current) {
             quill.setContents(defaultValueRef.current);
@@ -73,7 +101,7 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
 
         quill.on(Quill.events.TEXT_CHANGE, (delta: Delta, oldContents: Delta, source: string) => {
             onTextChangeRef.current?.(delta, oldContents, source);
-         
+
 
         });
 
@@ -118,7 +146,9 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
             >
                 Add Token
             </button>
-            <div id="editor" className="w-full h-full border border-gray-300 rounded-md"></div>
+            <div id="editor-container" className="w-full h-[200px]">
+                <div id="editor" className="w-full h-full border"></div>
+            </div>
         </div>
     );
 });
