@@ -136,13 +136,15 @@ const Editor = ({
 
     return (
         <div>
-            <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                type="button"
-                onClick={handleAddToken}
-            >
-                Add Token
-            </button>
+            <div className="flex justify-end mb-2">
+                <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                    type="button"
+                    onClick={handleAddToken}
+                >
+                    Add Token
+                </button>
+            </div>
             <div id="editor-container" className="w-full ">
                 <div id="editor" className="w-full h-full border"></div>
             </div>
