@@ -68,16 +68,11 @@ TokenBlot.tagName = 'span';
 TokenBlot.className = 'ql-token';
 Quill.register(TokenBlot);
 
-interface TokenObj {
-    type: string;
-    id: string;
-    name: string;
-}
 
 // Parse [TOKEN:{...}] into Delta with token objects
 async function parseStringToDelta(str: string) {
     const ops = [];
-    const tokenRegex = /\[TOKEN:({.*?})\]/g;
+    const tokenRegex = /\[TOKEN:([^\]]+)\]/g;
     let lastIndex = 0;
     let match;
 
@@ -86,8 +81,8 @@ async function parseStringToDelta(str: string) {
             ops.push({ insert: str.slice(lastIndex, match.index) });
         }
         try {
-            const tokenObj = JSON.parse(match[1]);
-            const realToken = await tokenRepository.getTokenById(tokenObj.id);
+            const tokenId = match[1];
+            const realToken = await tokenRepository.getTokenById(tokenId);
             console.log('realToken', realToken);
             ops.push({ insert: { token: realToken } });
             ops.push({ insert: '\u200B' });
@@ -148,7 +143,10 @@ const Editor = ({
                     if (typeof op.insert === 'string') {
                         result += op.insert;
                     } else if (op.insert?.token) {
-                        result += `[TOKEN:${JSON.stringify(op.insert.token)}]`;
+                        const token = op.insert.token as Token;
+                        if (token && typeof token.id === 'string') {
+                            result += `[TOKEN:${token.id}]`;
+                        }
                     }
                 });
                 onTextChangeRef.current?.(result);
