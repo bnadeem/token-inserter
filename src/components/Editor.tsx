@@ -105,28 +105,20 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
         const range = quill.getSelection(true);
         if (range) {
             quill.insertText(range.index, ' ', 'token', '{{token}}');
-            quill.setSelection(range.index + '{{token}}'.length, 0, 'user');
+            quill.setSelection(range.index + '{{token}}'.length + 1, 0, 'user');
         }
     };
 
     return (
         <div>
             <button
+                className="bg-blue-500 text-white px-4 py-2 rounded-md"
                 type="button"
                 onClick={handleAddToken}
-                style={{
-                    marginBottom: 8,
-                    padding: '6px 12px',
-                    background: '#0045ff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 4,
-                    cursor: 'pointer'
-                }}
             >
                 Add Token
             </button>
-            <div id="editor" style={{ width: '100%', height: '100%' }}></div>
+            <div id="editor" className="w-full h-full border border-gray-300 rounded-md"></div>
         </div>
     );
 });
