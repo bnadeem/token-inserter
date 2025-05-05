@@ -1,47 +1,46 @@
-import { Heading, Paragraph, Grid, GridItem, Card, Box } from '@contentful/f36-components';
+import { Heading, Grid, GridItem, EntryCard } from '@contentful/f36-components';
 import { DialogAppSDK } from '@contentful/app-sdk';
 import { useSDK } from '@contentful/react-apps-toolkit';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { TokenRepository, TokenEntry } from '../repositories/TokenRepository';
 
-const tokens = [
-  { type: 'RP', id: 'firstName', name: 'First Name' },
-  { type: 'RP', id: 'lastName', name: 'Last Name' },
-  { type: 'RP', id: 'email', name: 'Email' },
-  { type: 'RP', id: 'phone', name: 'Phone' },
-];
+const tokenRepository = new TokenRepository();
 
 const Dialog = () => {
   const sdk = useSDK<DialogAppSDK>();
-
-  // autoresize the dialog
+  const [tokens, setTokens] = useState<TokenEntry[]>([]);
+ // autoresize the dialog
   useEffect(() => {
+
     sdk.window.startAutoResizer();
+
+  tokenRepository.getAllTokens().then((tokens) => {
+    setTokens(tokens)
+  })
+ 
   }, [sdk]);
 
-  const handleTokenSelect = (token: { type: string; id: string; name: string }) => {
-    sdk.close(token );
+  const handleTokenSelect = (token: TokenEntry) => {
+    sdk.close(token);
   };
 
   return (
-    <Box className="w-full h-full p-4">
-      <Grid columns={2}>
-        {tokens.map((token: { type: string; id: string; name: string }) => (
+    <div style={{ padding: 24 }}>
+      <Heading as="h2" marginBottom="spacingM">Select a Token</Heading>
+      <Grid columns={1} rowGap="spacingM">
+        {tokens.map((token) => (
           <GridItem key={token.id}>
-            <Card
-              padding="default"
-              style={{ cursor: 'pointer', textAlign: 'center' }}
+            <EntryCard
+              title={token.name}
+              description={token.description || ''}
+              contentType={token.type}
               onClick={() => handleTokenSelect(token)}
-              tabIndex={0}
-              role="button"
-              aria-pressed="false"
-              as="button"
-            >
-              <Paragraph fontWeight="fontWeightDemiBold">{token.name}</Paragraph>
-            </Card>
+              style={{ cursor: 'pointer' }}
+            />
           </GridItem>
         ))}
       </Grid>
-    </Box>
+    </div>
   );
 };
 
