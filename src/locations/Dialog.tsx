@@ -71,6 +71,7 @@ const Dialog = () => {
           ))}
         </Tabs.List>
       </Tabs>
+      <div style={{ height: 16 }} />
       <Grid columns={1} rowGap="spacingM">
         {filteredTokens.map((token) => (
           <GridItem key={token.id}>
