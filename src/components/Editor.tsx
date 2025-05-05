@@ -109,7 +109,6 @@ const Editor = forwardRef<EditorRef, EditorProps>(({
                     result += `[TOKEN:${op.insert.token}]`;
                 }
             });
-            console.log(result);
             onTextChangeRef.current?.(result);
         });
 
