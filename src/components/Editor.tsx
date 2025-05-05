@@ -1,5 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import Quill, { Delta } from 'quill';
+import { FieldAppSDK } from '@contentful/app-sdk';
+import { useSDK } from '@contentful/react-apps-toolkit';
 
 const Embed = Quill.import('blots/embed') as any;
 
@@ -79,6 +81,7 @@ const Editor = ({
 }: EditorProps) => {
     const onTextChangeRef = useRef(onTextChange);
     const quillRef = useRef<Quill | null>(null);
+    const sdk = useSDK<FieldAppSDK>();
 
     useLayoutEffect(() => {
         onTextChangeRef.current = onTextChange;
@@ -121,6 +124,7 @@ const Editor = ({
 
     // Handler to insert a token at the current cursor position
     const handleAddToken = () => {
+
         const quill = quillRef.current;
         if (!quill) return;
         const range = quill.getSelection(true);
