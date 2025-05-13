@@ -16,7 +16,7 @@ const Field = () => {
   }, []);
 
   const handleTextChange = (text: string) => {
-    sdk.field.setValue(text);
+    sdk.field.setValue(text.trim());
   };
 
 

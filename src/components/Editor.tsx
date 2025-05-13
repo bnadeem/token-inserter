@@ -72,7 +72,7 @@ Quill.register(TokenBlot);
 // Parse [TOKEN:{...}] into Delta with token objects
 async function parseStringToDelta(str: string) {
     const ops = [];
-    const tokenRegex = /\[TOKEN:([^\]]+)\]/g;
+    const tokenRegex = /\[TOKEN:([^:]+):([^\]]+)\]/g;
     let lastIndex = 0;
     let match;
 
@@ -81,11 +81,17 @@ async function parseStringToDelta(str: string) {
             ops.push({ insert: str.slice(lastIndex, match.index) });
         }
         try {
-            const tokenId = match[1];
+            const typeId = match[1];
+            const tokenId = match[2];
             const realToken = await tokenRepository.getTokenById(tokenId);
-            console.log('realToken', realToken);
-            ops.push({ insert: { token: realToken } });
-            ops.push({ insert: '\u200B' });
+            if (realToken && realToken.type.id === typeId) {
+                // Ensure we have the complete token with matching type information
+                ops.push({ insert: { token: realToken } });
+                ops.push({ insert: '\u200B' });
+            } else {
+                // If token not found or type doesn't match, insert as plain text
+                ops.push({ insert: match[0] });
+            }
         } catch (e) {
             // If parsing fails, insert as plain text
             ops.push({ insert: match[0] });
@@ -145,7 +151,7 @@ const Editor = ({
                     } else if (op.insert?.token) {
                         const token = op.insert.token as Token;
                         if (token && typeof token.id === 'string') {
-                            result += `[TOKEN:${token.id}]`;
+                            result += `[TOKEN:${token.type.id}:${token.id}]`;
                         }
                     }
                 });
@@ -179,6 +185,7 @@ const Editor = ({
         if (!quill) return;
         const range = quill.getSelection(true);
         if (range) {
+            console.log('selectedToken', selectedToken);
             quill.insertEmbed(range.index, 'token', selectedToken);
             quill.insertText(range.index + 1, '\u200B');
             quill.setSelection(range.index + 2, 0);
