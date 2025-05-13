@@ -166,8 +166,16 @@ const Editor = ({
 
     // Handler to insert a token at the current cursor position
     const handleAddToken = async () => {
+        const allowedTypes = sdk.parameters.instance.allowedTokenTypes || '';
         const selectedToken = await sdk.dialogs.openCurrentApp({
             title: 'Select a Placeholder',
+            width: 800,
+            minHeight: 600,
+            shouldCloseOnOverlayClick: true,
+            shouldCloseOnEscapePress: true,
+            parameters: {
+                allowedTokenTypes: allowedTypes
+            }
         });
         if (!selectedToken) return;
         const quill = quillRef.current;

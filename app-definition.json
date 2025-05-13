@@ -45,6 +45,13 @@
         "name": "Button Text",
         "description": "The text to display on the button that adds placeholders",
         "default": "Add Placeholder"
+      },
+      {
+        "id": "allowedTokenTypes",
+        "type": "Symbol",
+        "name": "Allowed Placeholder Types",
+        "description": "Comma-separated list of placeholder type IDs to allow in this field (e.g., 'RP,AB'). Leave empty to allow all types.",
+        "default": ""
       }
     ]
   }

@@ -5,7 +5,6 @@ import { useEffect, useState, useRef } from 'react';
 import { TokenRepository } from '../repositories/TokenRepository';
 import { Token } from '../Models/Token';
 
-
 const Dialog = () => {
   const sdk = useSDK<DialogAppSDK>();
   const tokenRepository = new TokenRepository(sdk);
@@ -15,13 +14,25 @@ const Dialog = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const [selectedType, setSelectedType] = useState<string>('All');
 
+  // Debug logging for parameters
   useEffect(() => {
+    console.log('Dialog parameters:', sdk.parameters);
+  }, [sdk.parameters]);
+
+  // Get allowed token types from dialog parameters
+  const allowedTokenTypes = sdk.parameters.allowedTokenTypes
+    ? String(sdk.parameters.allowedTokenTypes).split(',').map((type: string) => type.trim())
+    : [];
+
+  useEffect(() => {
+    console.log('Processed allowedTokenTypes:', allowedTokenTypes);
     sdk.window.startAutoResizer();
     // Initial load
     tokenRepository.getAllTokens().then(setTokens);
   }, [sdk]);
 
   useEffect(() => {
+    console.log('allowedTokenTypes', allowedTokenTypes);
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(async () => {
@@ -45,13 +56,21 @@ const Dialog = () => {
     sdk.close(token);
   };
 
-  const tokenTypes = Array.from(new Set(tokens.map(token => token.type.name.trim())));
+  // Filter token types based on allowed types
+  const tokenTypes = Array.from(new Set(
+    tokens
+      .filter(token => allowedTokenTypes.length === 0 || allowedTokenTypes.includes(token.type.id))
+      .map(token => token.type.name.trim())
+  ));
 
   const handleTabChange = (tabId: string) => setSelectedType(tabId);
 
-  const filteredTokens = selectedType === 'All'
-    ? tokens
-    : tokens.filter(token => token.type.name.trim() === selectedType);
+  // Filter tokens based on selected type and allowed types
+  const filteredTokens = tokens.filter(token => {
+    const typeAllowed = allowedTokenTypes.length === 0 || allowedTokenTypes.includes(token.type.id);
+    const typeMatches = selectedType === 'All' || token.type.name.trim() === selectedType;
+    return typeAllowed && typeMatches;
+  });
 
   return (
     <div style={{ padding: 24, height: '700px', display: 'flex', flexDirection: 'column' }}>
