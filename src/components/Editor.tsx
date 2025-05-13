@@ -120,6 +120,7 @@ const Editor = ({
     const onTextChangeRef = useRef(onTextChange);
     const quillRef = useRef<Quill | null>(null);
     const sdk = useSDK<FieldAppSDK>();
+    const buttonText = sdk.parameters.instance.buttonText || 'Add Placeholder';
 
     useLayoutEffect(() => {
         onTextChangeRef.current = onTextChange;
@@ -200,7 +201,7 @@ const Editor = ({
                     type="button"
                     onClick={handleAddToken}
                 >
-                    Add Placeholder
+                    {buttonText}
                 </button>
             </div>
             <div id="editor-container" className="w-full ">

@@ -1,0 +1,28 @@
+{
+  "name": "Token Inserter",
+  "src": "https://token-inserter.contentful.com",
+  "locations": [
+    {
+      "location": "entry-field",
+      "fieldTypes": [
+        {
+          "type": "Text"
+        },
+        {
+          "type": "RichText"
+        }
+      ]
+    }
+  ],
+  "parameters": {
+    "instance": [
+      {
+        "id": "buttonText",
+        "type": "Symbol",
+        "name": "Button Text",
+        "description": "The text to display on the button that adds placeholders",
+        "default": "Add Placeholder"
+      }
+    ]
+  }
+} 
