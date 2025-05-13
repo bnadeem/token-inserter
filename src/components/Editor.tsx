@@ -167,8 +167,9 @@ const Editor = ({
     // Handler to insert a token at the current cursor position
     const handleAddToken = async () => {
         const allowedTypes = sdk.parameters.instance.allowedTokenTypes || '';
+        const dialogTitle = sdk.parameters.instance.dialogTitle || 'Select a Placeholder';
         const selectedToken = await sdk.dialogs.openCurrentApp({
-            title: 'Select a Placeholder',
+            title: dialogTitle,
             width: 800,
             minHeight: 600,
             shouldCloseOnOverlayClick: true,

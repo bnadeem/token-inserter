@@ -47,6 +47,13 @@
         "default": "Add Placeholder"
       },
       {
+        "id": "dialogTitle",
+        "type": "Symbol",
+        "name": "Dialog Title",
+        "description": "The title to display in the placeholder selection dialog",
+        "default": "Select a Placeholder"
+      },
+      {
         "id": "allowedTokenTypes",
         "type": "Symbol",
         "name": "Allowed Placeholder Types",
