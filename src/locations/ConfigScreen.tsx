@@ -4,7 +4,11 @@ import { Heading, Form, Paragraph, Flex, TextInput, FormControl } from '@content
 import { css } from 'emotion';
 import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
 
-export interface AppInstallationParameters {}
+export interface AppInstallationParameters {
+  spaceId?: string;
+  environmentId?: string;
+  accessToken?: string;
+}
 
 const ConfigScreen = () => {
   const [parameters, setParameters] = useState<AppInstallationParameters>({});
@@ -61,6 +65,43 @@ const ConfigScreen = () => {
       <Form>
         <Heading>App Config</Heading>
         <Paragraph>Welcome to your contentful app. This is your config page.</Paragraph>
+        
+        <FormControl>
+          <FormControl.Label>Space ID</FormControl.Label>
+          <TextInput
+            name="spaceId"
+            value={parameters.spaceId || ''}
+            onChange={(e) => setParameters({ ...parameters, spaceId: e.target.value })}
+          />
+          <FormControl.HelpText>
+            The ID of your Contentful space
+          </FormControl.HelpText>
+        </FormControl>
+
+        <FormControl>
+          <FormControl.Label>Environment ID</FormControl.Label>
+          <TextInput
+            name="environmentId"
+            value={parameters.environmentId || ''}
+            onChange={(e) => setParameters({ ...parameters, environmentId: e.target.value })}
+          />
+          <FormControl.HelpText>
+            The ID of your Contentful environment
+          </FormControl.HelpText>
+        </FormControl>
+
+        <FormControl>
+          <FormControl.Label>Access Token</FormControl.Label>
+          <TextInput
+            name="accessToken"
+            type="password"
+            value={parameters.accessToken || ''}
+            onChange={(e) => setParameters({ ...parameters, accessToken: e.target.value })}
+          />
+          <FormControl.HelpText>
+            Your Contentful access token
+          </FormControl.HelpText>
+        </FormControl>
       </Form>
     </Flex>
   );

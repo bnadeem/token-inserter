@@ -1,10 +1,7 @@
 import { createClient, Entry } from 'contentful';
 import { Token, TokenType } from '../Models/Token';
 import { EntryFieldTypes, EntrySkeletonType } from 'contentful';
-
-const spaceId = 'gqa9z44cxh9k';
-const environmentId = 'master';
-const accessToken = 'wacXzfF9nMPicl_V76AChe-ltYTl_9bqGLMvaPlOD0U';
+import { BaseAppSDK } from '@contentful/app-sdk';
 
 // Internal skeletons
 type TokenTypeSkeleton = EntrySkeletonType<{
@@ -33,7 +30,13 @@ function getString(field: any): string | undefined {
 export class TokenRepository {
   private client: ReturnType<typeof createClient>;
 
-  constructor() {
+  constructor(sdk: BaseAppSDK) {
+    const { spaceId, environmentId, accessToken } = sdk.parameters.installation;
+    
+    if (!spaceId || !environmentId || !accessToken) {
+      throw new Error('Missing required installation parameters: spaceId, environmentId, or accessToken');
+    }
+
     this.client = createClient({
       space: spaceId,
       environment: environmentId,

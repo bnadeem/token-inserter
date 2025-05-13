@@ -6,8 +6,6 @@ import { Token } from '../Models/Token';
 import { TokenRepository } from '../repositories/TokenRepository';
 const Embed = Quill.import('blots/embed') as any;
 
-const tokenRepository = new TokenRepository();
-
 // TokenBlot now stores and renders token objects
 class TokenBlot extends Embed {
     static create(value: Token) {
@@ -68,13 +66,14 @@ TokenBlot.tagName = 'span';
 TokenBlot.className = 'ql-token';
 Quill.register(TokenBlot);
 
-
 // Parse [TOKEN:{...}] into Delta with token objects
-async function parseStringToDelta(str: string) {
+async function parseStringToDelta(str: string, sdk: FieldAppSDK) {
     const ops = [];
     const tokenRegex = /\[TOKEN:([^:]+):([^\]]+)\]/g;
     let lastIndex = 0;
     let match;
+
+    const tokenRepository = new TokenRepository(sdk);
 
     while ((match = tokenRegex.exec(str)) !== null) {
         if (match.index > lastIndex) {
@@ -110,8 +109,6 @@ interface EditorProps {
     onTextChange?: (text: string) => void;
 }
 
-
-
 const Editor = ({
     defaultValue = '',
     showToolbar = true,
@@ -127,7 +124,6 @@ const Editor = ({
     });
 
     useEffect(() => {
-
         const runAsync = async () => {
             const quill = new Quill('#editor', {
                 theme: 'snow',
@@ -139,7 +135,7 @@ const Editor = ({
             (window as any).quillRefInstance = quill;
 
             if (defaultValue) {
-                const delta = await parseStringToDelta(defaultValue);
+                const delta = await parseStringToDelta(defaultValue, sdk);
                 quill.setContents(new Delta(delta.ops));
             }
 
@@ -164,23 +160,15 @@ const Editor = ({
                 quillRef.current = null;
                 (window as any).quillRefInstance = null;
             };
-
         }
         runAsync();
-
-
-    }, [defaultValue]);
+    }, [defaultValue, sdk]);
 
     // Handler to insert a token at the current cursor position
     const handleAddToken = async () => {
-        // MOCK: Replace this with your real dialog logic
-        // Simulate selecting a token
-
         const selectedToken = await sdk.dialogs.openCurrentApp({
             title: 'Select a Placeholder',
         });
-        // If using Contentful dialog, use:
-        // const selectedToken = await sdk.dialogs.openCurrentApp({ ... });
         if (!selectedToken) return;
         const quill = quillRef.current;
         if (!quill) return;

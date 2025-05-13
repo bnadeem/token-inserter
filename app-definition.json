@@ -15,6 +15,29 @@
     }
   ],
   "parameters": {
+    "installation": [
+      {
+        "id": "spaceId",
+        "type": "Symbol",
+        "name": "Space ID",
+        "description": "The ID of your Contentful space",
+        "required": true
+      },
+      {
+        "id": "environmentId",
+        "type": "Symbol",
+        "name": "Environment ID",
+        "description": "The ID of your Contentful environment",
+        "required": true
+      },
+      {
+        "id": "accessToken",
+        "type": "Secret",
+        "name": "Access Token",
+        "description": "Your Contentful access token",
+        "required": true
+      }
+    ],
     "instance": [
       {
         "id": "buttonText",

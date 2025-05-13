@@ -5,10 +5,10 @@ import { useEffect, useState, useRef } from 'react';
 import { TokenRepository } from '../repositories/TokenRepository';
 import { Token } from '../Models/Token';
 
-const tokenRepository = new TokenRepository();
 
 const Dialog = () => {
   const sdk = useSDK<DialogAppSDK>();
+  const tokenRepository = new TokenRepository(sdk);
   const [tokens, setTokens] = useState<Token[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
