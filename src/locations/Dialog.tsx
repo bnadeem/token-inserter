@@ -55,7 +55,7 @@ const Dialog = () => {
 
   return (
     <div style={{ padding: 24, height: '700px', display: 'flex', flexDirection: 'column' }}>
-      <Heading as="h2" marginBottom="spacingM">Select a Token</Heading>
+      {/* <Heading as="h2" marginBottom="spacingM">Select a Placeholder</Heading> */}
       <TextInput
         value={search}
         onChange={e => setSearch(e.target.value)}

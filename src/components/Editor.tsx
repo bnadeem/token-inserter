@@ -176,7 +176,7 @@ const Editor = ({
         // Simulate selecting a token
 
         const selectedToken = await sdk.dialogs.openCurrentApp({
-            title: 'Select a Token',
+            title: 'Select a Placeholder',
         });
         // If using Contentful dialog, use:
         // const selectedToken = await sdk.dialogs.openCurrentApp({ ... });
@@ -200,7 +200,7 @@ const Editor = ({
                     type="button"
                     onClick={handleAddToken}
                 >
-                    Add Token
+                    Add Placeholder
                 </button>
             </div>
             <div id="editor-container" className="w-full ">
