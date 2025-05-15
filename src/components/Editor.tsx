@@ -4,6 +4,7 @@ import { FieldAppSDK } from '@contentful/app-sdk';
 import { useSDK } from '@contentful/react-apps-toolkit';
 import { Token } from '../Models/Token';
 import { TokenRepository } from '../repositories/TokenRepository';
+import { deltaToMarkdown, markdownToDeltaWithTokens } from '../utils/deltaMarkdownConverter';
 const Embed = Quill.import('blots/embed') as any;
 
 // TokenBlot now stores and renders token objects
@@ -135,24 +136,16 @@ const Editor = ({
             (window as any).quillRefInstance = quill;
 
             if (defaultValue) {
-                const delta = await parseStringToDelta(defaultValue, sdk);
-                quill.setContents(new Delta(delta.ops));
+                // Convert markdown to delta format with resolved tokens
+                const delta = await markdownToDeltaWithTokens(defaultValue, sdk);
+                quill.setContents(delta);
             }
 
             quill.on(Quill.events.TEXT_CHANGE, () => {
-                let result = '';
                 const fullDelta = quill.getContents();
-                fullDelta.ops.forEach(op => {
-                    if (typeof op.insert === 'string') {
-                        result += op.insert;
-                    } else if (op.insert?.token) {
-                        const token = op.insert.token as Token;
-                        if (token && typeof token.id === 'string') {
-                            result += `[TOKEN:${token.type.id}:${token.id}]`;
-                        }
-                    }
-                });
-                onTextChangeRef.current?.(result);
+                // Convert delta to markdown before calling onTextChange
+                const markdown = deltaToMarkdown(fullDelta);
+                onTextChangeRef.current?.(markdown);
             });
 
             // Cleanup

@@ -10,7 +10,7 @@ const Page = () => {
   */
   // const cma = useCMA();
 
-  return <Paragraph>Hello Page Component (AppId: {sdk.ids.app})</Paragraph>;
+  return <Paragraph>Hello Page Component test (AppId: {sdk.ids.app})</Paragraph>;
 };
 
 export default Page;
