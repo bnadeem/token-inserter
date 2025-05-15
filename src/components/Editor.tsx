@@ -14,7 +14,8 @@ class TokenBlot extends Embed {
         node.setAttribute('data-token', JSON.stringify(value));
         node.setAttribute('data-token-id', value.id);
         node.classList.add('ql-token');
-        node.textContent = `${value.name} (${value.type.id})`;
+        node.textContent = value.name;
+        node.title = value.type.name;
 
         // Color by type
         if (value.type.id === 'RP') {
