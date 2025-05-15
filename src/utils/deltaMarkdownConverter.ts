@@ -31,7 +31,7 @@ export function deltaToMarkdown(delta: Delta): string {
             // Handle tokens
             const token = op.insert.token as Token;
             if (token && typeof token.id === 'string') {
-                markdown += `[TOKEN:${token.type.id}:${token.id}]`;
+                markdown += `{TOKEN:${token.type.id}:${token.id}}`;
             }
         }
     });
@@ -47,7 +47,7 @@ export function deltaToMarkdown(delta: Delta): string {
 export async function markdownToDeltaWithTokens(markdown: string, sdk: FieldAppSDK): Promise<Delta> {
     const ops: any[] = [];
     const tokenRepository = new TokenRepository(sdk);
-    const tokenRegex = /\[TOKEN:([^:]+):([^\]]+)\]/g;
+    const tokenRegex = /{TOKEN:([^:]+):([^}]+)}/g;
     let lastIndex = 0;
     let match;
 
