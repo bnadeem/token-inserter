@@ -20,8 +20,8 @@ const Dialog = () => {
   }, [sdk.parameters]);
 
   // Get allowed token types from dialog parameters
-  const allowedTokenTypes = sdk.parameters.allowedTokenTypes
-    ? String(sdk.parameters.allowedTokenTypes).split(',').map((type: string) => type.trim())
+  const allowedTokenTypes = sdk.parameters.invocation?.allowedTokenTypes
+    ? String(sdk.parameters.invocation.allowedTokenTypes).split(',').map((type: string) => type.trim())
     : [];
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const Dialog = () => {
   // Filter token types based on allowed types
   const tokenTypes = Array.from(new Set(
     tokens
-      .filter(token => allowedTokenTypes.length === 0 || allowedTokenTypes.includes(token.type.id))
+      .filter(token => allowedTokenTypes.length === 0 || allowedTokenTypes.includes('All') || allowedTokenTypes.includes(token.type.id))
       .map(token => token.type.name.trim())
   ));
 
@@ -67,6 +67,11 @@ const Dialog = () => {
 
   // Filter tokens based on selected type and allowed types
   const filteredTokens = tokens.filter(token => {
+    // If 'All' is in allowedTokenTypes, show all tokens
+    if (allowedTokenTypes.includes('All')) {
+      return selectedType === 'All' || token.type.name.trim() === selectedType;
+    }
+    // Otherwise, filter by both allowed types and selected type
     const typeAllowed = allowedTokenTypes.length === 0 || allowedTokenTypes.includes(token.type.id);
     const typeMatches = selectedType === 'All' || token.type.name.trim() === selectedType;
     return typeAllowed && typeMatches;
