@@ -120,6 +120,9 @@ const Editor = ({
     const quillRef = useRef<Quill | null>(null);
     const sdk = useSDK<FieldAppSDK>();
     const buttonText = sdk.parameters.instance.buttonText || 'Add Placeholder';
+    const size = sdk.parameters.instance.size || 'multiline';
+
+    console.log('parameters', sdk.parameters);
 
     useLayoutEffect(() => {
         onTextChangeRef.current = onTextChange;
@@ -196,7 +199,18 @@ const Editor = ({
                 </button>
             </div>
             <div id="editor-container" className="w-full ">
-                <div id="editor" className="w-full h-full border"></div>
+                <div 
+                    id="editor" 
+                    className="w-full h-full border pb-12"
+                    style={size === 'singleLine' ? {
+                        height: '40px',
+                        minHeight: '40px',
+                        maxHeight: '40px',
+                        overflowY: 'hidden',
+                    } : {
+                        minHeight: '192px',
+                    }}
+                ></div>
             </div>
         </div>
     );

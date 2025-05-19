@@ -59,6 +59,13 @@
         "name": "Allowed Placeholder Types",
         "description": "Comma-separated list of placeholder type IDs to allow in this field (e.g., 'RP,AB'). Leave empty to allow all types.",
         "default": ""
+      },
+      {
+        "id": "size",
+        "type": "Symbol",
+        "name": "Editor Size",
+        "description": "The size of the editor - either 'singleLine' or 'multiline'",
+        "default": "multiline"
       }
     ]
   }
