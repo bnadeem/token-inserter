@@ -1,15 +1,15 @@
 # Token Inserter - Contentful App
 
-A powerful Contentful app that enables content creators to insert dynamic placeholders/tokens into rich text fields. Perfect for creating templated content with personalized elements like doctor names, patient information, action buttons, and more.
+A powerful Contentful app that enables content creators to insert dynamic placeholders/tokens into **short text** and **long text** fields. Perfect for creating templated content with personalized elements like doctor names, patient information, action buttons, and more.
 
 ## 🚀 Features
 
-- **Dynamic Token Insertion**: Insert predefined tokens into rich text content
+- **Dynamic Token Insertion**: Insert predefined tokens into short text and long text fields
 - **Token Type Management**: Organize tokens by categories (Doctor Tokens, Reference Placeholders, Action Buttons, etc.)
 - **Visual Color Coding**: Each token type has its own color for easy identification
 - **Search & Filter**: Quickly find tokens with search functionality and type-based filtering
-- **Installation Parameters**: Control which token types are available per field
-- **Rich Text Integration**: Seamlessly integrates with Contentful's rich text editor
+- **Configurable Parameters**: Control button text, dialog title, allowed token types, and more
+- **Field Integration**: Seamlessly integrates with Contentful's short text and long text fields
 
 ## 📋 Token Types
 
@@ -55,6 +55,8 @@ The app comes with pre-configured token types:
    CONTENTFUL_MANAGEMENT_TOKEN=your_management_token
    CONTENTFUL_ENVIRONMENT_ID=master
    ```
+   
+   > **Note**: You'll also need a Content Delivery API (CDA) access token for the installation parameters when deploying the app.
 
 4. **Initialize Contentful Content Models**
    ```bash
@@ -107,15 +109,14 @@ npm run typecheck
 1. Go to your Contentful space
 2. Navigate to **Apps** → **Custom Apps**
 3. Find your uploaded app and click **Install**
-4. Configure the installation parameters:
-   - `allowedTokenTypes`: Comma-separated list of token type IDs (`DT,RP,AB`) or `ALL` for all types
+4. Configure the installation parameters (see [Installation Parameters](#installation-parameters) section)
 
-### Using in Rich Text Fields
+### Using in Short Text and Long Text Fields
 
-1. Open any entry with a rich text field where the app is installed
-2. Click the token inserter button in the rich text toolbar
-3. Search or browse available tokens
-4. Click on a token to insert it into your content
+1. Open any entry with a short text or long text field where the app is installed
+2. Click the token inserter button next to the field
+3. Search or browse available tokens in the dialog
+4. Click on a token to insert it into your field content
 
 ### Managing Tokens
 
@@ -164,14 +165,38 @@ test/
 └── mocks/              # Test mocks
 ```
 
-## 🔒 Installation Parameters
+## ⚙️ Configuration Parameters
 
-Configure which token types are available per field:
+The app uses two types of parameters to customize its behavior:
 
-- **`allowedTokenTypes`**: 
-  - Specific types: `"DT,RP"` (comma-separated)
-  - All types: `"ALL"` or `"all"`
-  - No restriction: Leave empty
+### Installation Parameters
+
+Global parameters configured when installing the app in your Contentful space:
+
+| Parameter ID | Display Name | Type | Description |
+|-------------|--------------|------|-------------|
+| `spaceId` | Space Id | Short text | Your Contentful space identifier |
+| `environmentId` | Environment Id | Short text | Target environment (usually 'master') |
+| `accessToken` | CDA Access Token | Short text | Content Delivery API access token |
+
+### Instance Parameters
+
+Field-specific parameters configured when adding the app to individual fields:
+
+| Parameter ID | Display Name | Type | Description |
+|-------------|--------------|------|-------------|
+| `buttonText` | Button Text | Short text | Text displayed on the token inserter button |
+| `allowedTokenTypes` | Allowed Placeholder Types | Short text | Comma-separated token type IDs (`DT,RP,AB`) or `ALL` |
+| `dialogTitle` | Dialog Title | Short text | Title shown in the token selection dialog |
+| `size` | Size | Select | Button size (small, medium, large) |
+
+### Parameter Examples
+
+**Instance Parameters:**
+- `buttonText`: "Insert Token", "Add Placeholder", "Select Token"
+- `allowedTokenTypes`: `"DT,RP"` (specific types) or `"ALL"` (all types)
+- `dialogTitle`: "Select a Placeholder", "Choose Token"
+- `size`: "medium"
 
 ## 🐛 Troubleshooting
 
@@ -182,11 +207,22 @@ Configure which token types are available per field:
    - Check browser console for debug information
 
 2. **Tokens not loading**
-   - Verify Contentful credentials in `.env`
-   - Run the initialization script again
+   - Verify installation parameters (`spaceId`, `environmentId`, `accessToken`)
+   - Check that the CDA access token has proper permissions
+   - Run the initialization script again: `node contentful/cma-init-script.js`
    - Check network requests in browser dev tools
 
-3. **Build errors**
+3. **Button not appearing in fields**
+   - Ensure the app is installed on the correct field type (Short text or Long text)
+   - Check instance parameters are configured correctly
+   - Verify the field has the app enabled in its settings
+
+4. **Parameter configuration issues**
+   - Installation parameters: Set at the space level when installing the app
+   - Instance parameters: Set per field when adding the app to a field
+   - Ensure `allowedTokenTypes` format: `"DT,RP,AB"` or `"ALL"`
+
+5. **Build errors**
    - Clear node_modules and reinstall: `rm -rf node_modules && npm install`
    - Check TypeScript errors: `npm run typecheck`
 
