@@ -21,14 +21,19 @@ const Dialog = () => {
 
   // Get allowed token types from dialog parameters
   const allowedTokenTypes = sdk.parameters.invocation?.allowedTokenTypes
-    ? String(sdk.parameters.invocation.allowedTokenTypes).split(',').map((type: string) => type.trim())
+    ? String(sdk.parameters.invocation.allowedTokenTypes).split(',').map((type: string) => type.trim().toLowerCase())
     : [];
 
   useEffect(() => {
     console.log('Processed allowedTokenTypes:', allowedTokenTypes);
     sdk.window.startAutoResizer();
     // Initial load
-    tokenRepository.getAllTokens().then(setTokens);
+    tokenRepository.getAllTokens().then(tokens => {
+      console.log('Tokens loaded:', tokens);
+      setTokens(tokens);
+    }).catch(error => {
+      console.error('Error loading tokens:', error);
+    });
   }, [sdk]);
 
   useEffect(() => {
@@ -59,7 +64,7 @@ const Dialog = () => {
   // Filter token types based on allowed types
   const tokenTypes = Array.from(new Set(
     tokens
-      .filter(token => allowedTokenTypes.length === 0 || allowedTokenTypes.includes('All') || allowedTokenTypes.includes(token.type.id))
+      .filter(token => allowedTokenTypes.length === 0 || allowedTokenTypes.includes('all') || allowedTokenTypes.includes(token.type.id.toLowerCase()))
       .map(token => token.type.name.trim())
   ));
 
@@ -67,14 +72,24 @@ const Dialog = () => {
 
   // Filter tokens based on selected type and allowed types
   const filteredTokens = tokens.filter(token => {
-    // If 'All' is in allowedTokenTypes, show all tokens
-    if (allowedTokenTypes.includes('All')) {
+    // If 'all' is in allowedTokenTypes, show all tokens
+    if (allowedTokenTypes.includes('all')) {
       return selectedType === 'All' || token.type.name.trim() === selectedType;
     }
     // Otherwise, filter by both allowed types and selected type
-    const typeAllowed = allowedTokenTypes.length === 0 || allowedTokenTypes.includes(token.type.id);
+    const typeAllowed = allowedTokenTypes.length === 0 || allowedTokenTypes.includes(token.type.id.toLowerCase());
     const typeMatches = selectedType === 'All' || token.type.name.trim() === selectedType;
     return typeAllowed && typeMatches;
+  });
+
+  // Debug logging
+  console.log('Debug Info:', {
+    allowedTokenTypes,
+    selectedType,
+    totalTokens: tokens.length,
+    filteredTokens: filteredTokens.length,
+    tokenTypes,
+    hasAllInAllowed: allowedTokenTypes.includes('all')
   });
 
   return (
