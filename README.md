@@ -2,7 +2,7 @@
 
 A powerful Contentful app that enables content creators to insert dynamic placeholders/tokens into **short text** and **long text** fields. Perfect for creating templated content with personalized elements like doctor names, patient information, action buttons, and more.
 
-![Token Inserter in Action](screenshots/Screenshot%202025-06-20%20at%204.10.08%20PM.png)
+![Token Inserter in Action](screenshots/contentful-entry-editor.png)
 
 *The Token Inserter app integrated into Contentful's entry editor, showing Insert Placeholder buttons for both short text and long text fields*
 
@@ -124,7 +124,7 @@ npm run typecheck
 3. Find your uploaded app and click **Install**
 4. Configure the installation parameters as shown below:
 
-![App Configuration](screenshots/Screenshot%202025-06-20%20at%204.11.18%20PM.png)
+![App Configuration](screenshots/app-configuration-page.png)
 
 *App configuration screen showing the required installation parameters: Space ID, Environment ID, and Access Token*
 
@@ -135,11 +135,11 @@ npm run typecheck
 3. Search or browse available tokens in the dialog
 4. Click on a token to insert it into your field content
 
-![Field Integration](screenshots/Screenshot%202025-06-20%20at%204.10.19%20PM.png)
+![Field Integration](screenshots/token-inserter-interface.png)
 
 *Close-up view showing the Insert Placeholder buttons integrated into short text and long text fields, with tokens displayed as colored badges*
 
-![Token Selection Dialog](screenshots/Screenshot%202025-06-20%20at%204.10.30%20PM.png)
+![Token Selection Dialog](screenshots/placeholder-selection-dialog.png)
 
 *The token selection dialog showing categorized tabs (All, Action Button, Reference Placeholder, Doctor Token, etc.) with searchable tokens organized by type and color-coded for easy identification*
 
@@ -198,7 +198,7 @@ The app uses two types of parameters to customize its behavior:
 
 Global parameters configured when installing the app in your Contentful space:
 
-![Installation Parameters](screenshots/Screenshot%202025-06-20%20at%204.11.48%20PM.png)
+![Installation Parameters](screenshots/installation-parameters-config.png)
 
 *Installation parameter configuration showing spaceId, environmentId, and accessToken fields*
 
@@ -208,11 +208,9 @@ Global parameters configured when installing the app in your Contentful space:
 | `environmentId` | Environment Id | Short text | Target environment (usually 'master') |
 | `accessToken` | CDA Access Token | Short text | Content Delivery API access token |
 
-### Instance Parameters
-
 Field-specific parameters configured when adding the app to individual fields:
 
-![Instance Parameters](screenshots/Screenshot%202025-06-20%20at%204.11.41%20PM.png)
+![Instance Parameters](screenshots/instance-parameters-config.png)
 
 *Instance parameter configuration showing buttonText, allowedTokenTypes, dialogTitle, and size parameters*
 
