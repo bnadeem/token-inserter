@@ -235,7 +235,7 @@ When setting up the size parameter, you'll need to configure it as a Select fiel
 - `buttonText`: "Insert Token", "Add Placeholder", "Select Token"
 - `allowedTokenTypes`: `"DT,RP"` (specific types) or `"ALL"` (all types)
 - `dialogTitle`: "Select a Placeholder", "Choose Token"
-- `size`: "medium"
+- `size`: "singleLine" or "multiline"
 
 ## 🐛 Troubleshooting
 
