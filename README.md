@@ -2,7 +2,7 @@
 
 A powerful Contentful app that enables content creators to insert dynamic placeholders/tokens into **short text** and **long text** fields. Perfect for creating templated content with personalized elements like doctor names, patient information, action buttons, and more.
 
-![Token Inserter in Action](screenshots/contentful-entry-editor.png)
+![Token Inserter in Action](screenshots/token-inserter-interface.png)
 
 *The Token Inserter app integrated into Contentful's entry editor, showing Insert Placeholder buttons for both short text and long text fields*
 
