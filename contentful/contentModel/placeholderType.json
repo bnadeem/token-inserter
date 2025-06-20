@@ -1,0 +1,84 @@
+{
+    "name": "PlaceHolder Type",
+    "description": "",
+    "displayField": "name",
+    "fields": [
+      {
+        "id": "id",
+        "name": "id",
+        "type": "Symbol",
+        "localized": false,
+        "required": false,
+        "validations": [],
+        "disabled": false,
+        "omitted": false
+      },
+      {
+        "id": "name",
+        "name": "Name",
+        "type": "Symbol",
+        "localized": false,
+        "required": false,
+        "validations": [],
+        "disabled": false,
+        "omitted": false
+      },
+      {
+        "id": "color",
+        "name": "Color",
+        "type": "Symbol",
+        "localized": false,
+        "required": false,
+        "validations": [],
+        "disabled": false,
+        "omitted": false
+      }
+    ],
+    "sys": {
+      "space": {
+        "sys": {
+          "type": "Link",
+          "linkType": "Space",
+          "id": "6phrvrrahxot"
+        }
+      },
+      "id": "tokenType",
+      "type": "ContentType",
+      "createdAt": "2025-06-20T19:43:20.889Z",
+      "updatedAt": "2025-06-20T19:44:28.921Z",
+      "environment": {
+        "sys": {
+          "id": "master",
+          "type": "Link",
+          "linkType": "Environment"
+        }
+      },
+      "publishedVersion": 3,
+      "publishedAt": "2025-06-20T19:44:28.921Z",
+      "firstPublishedAt": "2025-06-20T19:43:21.538Z",
+      "createdBy": {
+        "sys": {
+          "type": "Link",
+          "linkType": "User",
+          "id": "1ilLcz0lg40coeY2T7skcO"
+        }
+      },
+      "updatedBy": {
+        "sys": {
+          "type": "Link",
+          "linkType": "User",
+          "id": "1ilLcz0lg40coeY2T7skcO"
+        }
+      },
+      "publishedCounter": 2,
+      "version": 4,
+      "publishedBy": {
+        "sys": {
+          "type": "Link",
+          "linkType": "User",
+          "id": "1ilLcz0lg40coeY2T7skcO"
+        }
+      },
+      "urn": "crn:contentful:::content:spaces/6phrvrrahxot/environments/master/content_types/tokenType"
+    }
+  }

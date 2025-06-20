@@ -1,0 +1,101 @@
+{
+    "name": "Placeholder",
+    "description": "",
+    "displayField": "name",
+    "fields": [
+      {
+        "id": "id",
+        "name": "Id",
+        "type": "Symbol",
+        "localized": false,
+        "required": false,
+        "validations": [],
+        "disabled": false,
+        "omitted": false
+      },
+      {
+        "id": "name",
+        "name": "Name",
+        "type": "Symbol",
+        "localized": false,
+        "required": false,
+        "validations": [],
+        "disabled": false,
+        "omitted": false
+      },
+      {
+        "id": "description",
+        "name": "Description",
+        "type": "Symbol",
+        "localized": false,
+        "required": false,
+        "validations": [],
+        "disabled": false,
+        "omitted": false
+      },
+      {
+        "id": "type",
+        "name": "Type",
+        "type": "Link",
+        "localized": false,
+        "required": false,
+        "validations": [
+          {
+            "linkContentType": [
+              "tokenType"
+            ]
+          }
+        ],
+        "disabled": false,
+        "omitted": false,
+        "linkType": "Entry"
+      }
+    ],
+    "sys": {
+      "space": {
+        "sys": {
+          "type": "Link",
+          "linkType": "Space",
+          "id": "6phrvrrahxot"
+        }
+      },
+      "id": "token",
+      "type": "ContentType",
+      "createdAt": "2025-06-20T19:46:33.830Z",
+      "updatedAt": "2025-06-20T19:46:34.508Z",
+      "environment": {
+        "sys": {
+          "id": "master",
+          "type": "Link",
+          "linkType": "Environment"
+        }
+      },
+      "publishedVersion": 1,
+      "publishedAt": "2025-06-20T19:46:34.508Z",
+      "firstPublishedAt": "2025-06-20T19:46:34.508Z",
+      "createdBy": {
+        "sys": {
+          "type": "Link",
+          "linkType": "User",
+          "id": "1ilLcz0lg40coeY2T7skcO"
+        }
+      },
+      "updatedBy": {
+        "sys": {
+          "type": "Link",
+          "linkType": "User",
+          "id": "1ilLcz0lg40coeY2T7skcO"
+        }
+      },
+      "publishedCounter": 1,
+      "version": 2,
+      "publishedBy": {
+        "sys": {
+          "type": "Link",
+          "linkType": "User",
+          "id": "1ilLcz0lg40coeY2T7skcO"
+        }
+      },
+      "urn": "crn:contentful:::content:spaces/6phrvrrahxot/environments/master/content_types/token"
+    }
+  }
