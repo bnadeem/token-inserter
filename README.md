@@ -216,10 +216,10 @@ Field-specific parameters configured when adding the app to individual fields:
 
 | Parameter ID | Display Name | Type | Description |
 |-------------|--------------|------|-------------|
-| `buttonText` | Button Text | Short text | Text displayed on the token inserter button |
+| `buttonText` | Button Text | Short text | Text displayed on the placeholder inserter button |
 | `allowedTokenTypes` | Allowed Placeholder Types | Short text | Comma-separated token type IDs (`DT,RP,AB`) or `ALL` |
 | `dialogTitle` | Dialog Title | Short text | Title shown in the token selection dialog |
-| `size` | Size | Select | Button size (small, medium, large) |
+| `size` | Size | Select | Editor type (singleLine or multiline) |
 
 ### Size Parameter Configuration
 
@@ -227,12 +227,12 @@ When setting up the size parameter, you'll need to configure it as a Select fiel
 
 ![Size Parameter Dropdown Configuration](screenshots/size-parameter-dropdown-config.png)
 
-*Configuration screen for the size parameter showing how to set up the dropdown options (Single Line/singleLine and Multiline/multiline) for button size selection*
+*Configuration screen for the size parameter showing how to set up the dropdown options (Single Line/singleLine and Multiline/multiline) for editor type selection*
 
 ### Parameter Examples
 
 **Instance Parameters:**
-- `buttonText`: "Insert Token", "Add Placeholder", "Select Token"
+- `buttonText`: "Insert Placeholder", "Add Placeholder", "Insert Token"  (default: "Add Placeholder")
 - `allowedTokenTypes`: `"DT,RP"` (specific types) or `"ALL"` (all types)
 - `dialogTitle`: "Select a Placeholder", "Choose Token"
 - `size`: "singleLine" or "multiline"

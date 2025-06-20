@@ -1,5 +1,5 @@
 {
-  "name": "Placeholder Inserter",
+  "name": "Token Inserter",
   "src": "https://token-inserter.contentful.com",
   "locations": [
     {
@@ -7,9 +7,6 @@
       "fieldTypes": [
         {
           "type": "Text"
-        },
-        {
-          "type": "RichText"
         }
       ]
     }
