@@ -2,6 +2,10 @@
 
 A powerful Contentful app that enables content creators to insert dynamic placeholders/tokens into **short text** and **long text** fields. Perfect for creating templated content with personalized elements like doctor names, patient information, action buttons, and more.
 
+![Token Inserter in Action](screenshots/Screenshot%202025-06-20%20at%204.10.08%20PM.png)
+
+*The Token Inserter app integrated into Contentful's entry editor, showing Insert Placeholder buttons for both short text and long text fields*
+
 ## 🚀 Features
 
 - **Dynamic Token Insertion**: Insert predefined tokens into short text and long text fields
@@ -24,6 +28,15 @@ The app comes with pre-configured token types:
   
 - **Action Button (AB)** - Light Orange (#ffccbc)
   - Submit Application
+
+## 🎬 How It Works
+
+The Token Inserter provides a seamless workflow for adding dynamic content to your fields:
+
+1. **Field Integration**: The app adds "Insert Placeholder" buttons to your short text and long text fields
+2. **Token Selection**: Click the button to open a searchable dialog with categorized tokens  
+3. **Visual Feedback**: Selected tokens appear as colored badges in your content
+4. **Easy Management**: Tokens are stored as Contentful entries and can be managed like any other content
 
 ## 🛠 Installation
 
@@ -109,14 +122,26 @@ npm run typecheck
 1. Go to your Contentful space
 2. Navigate to **Apps** → **Custom Apps**
 3. Find your uploaded app and click **Install**
-4. Configure the installation parameters (see [Installation Parameters](#installation-parameters) section)
+4. Configure the installation parameters as shown below:
+
+![App Configuration](screenshots/Screenshot%202025-06-20%20at%204.11.18%20PM.png)
+
+*App configuration screen showing the required installation parameters: Space ID, Environment ID, and Access Token*
 
 ### Using in Short Text and Long Text Fields
 
 1. Open any entry with a short text or long text field where the app is installed
-2. Click the token inserter button next to the field
+2. Click the **"Insert Placeholder"** button next to the field
 3. Search or browse available tokens in the dialog
 4. Click on a token to insert it into your field content
+
+![Field Integration](screenshots/Screenshot%202025-06-20%20at%204.10.19%20PM.png)
+
+*Close-up view showing the Insert Placeholder buttons integrated into short text and long text fields, with tokens displayed as colored badges*
+
+![Token Selection Dialog](screenshots/Screenshot%202025-06-20%20at%204.10.30%20PM.png)
+
+*The token selection dialog showing categorized tabs (All, Action Button, Reference Placeholder, Doctor Token, etc.) with searchable tokens organized by type and color-coded for easy identification*
 
 ### Managing Tokens
 
@@ -173,6 +198,10 @@ The app uses two types of parameters to customize its behavior:
 
 Global parameters configured when installing the app in your Contentful space:
 
+![Installation Parameters](screenshots/Screenshot%202025-06-20%20at%204.11.48%20PM.png)
+
+*Installation parameter configuration showing spaceId, environmentId, and accessToken fields*
+
 | Parameter ID | Display Name | Type | Description |
 |-------------|--------------|------|-------------|
 | `spaceId` | Space Id | Short text | Your Contentful space identifier |
@@ -182,6 +211,10 @@ Global parameters configured when installing the app in your Contentful space:
 ### Instance Parameters
 
 Field-specific parameters configured when adding the app to individual fields:
+
+![Instance Parameters](screenshots/Screenshot%202025-06-20%20at%204.11.41%20PM.png)
+
+*Instance parameter configuration showing buttonText, allowedTokenTypes, dialogTitle, and size parameters*
 
 | Parameter ID | Display Name | Type | Description |
 |-------------|--------------|------|-------------|
