@@ -19,22 +19,22 @@
       {
         "id": "spaceId",
         "type": "Symbol",
-        "name": "Space ID",
+        "name": "Space Id",
         "description": "The ID of your Contentful space",
         "required": true
       },
       {
         "id": "environmentId",
         "type": "Symbol",
-        "name": "Environment ID",
+        "name": "Environment Id",
         "description": "The ID of your Contentful environment",
         "required": true
       },
       {
         "id": "accessToken",
-        "type": "Secret",
-        "name": "Access Token",
-        "description": "Your Contentful access token",
+        "type": "Symbol",
+        "name": "CDA Access Token",
+        "description": "Your Contentful Content Delivery API access token",
         "required": true
       }
     ],
@@ -62,10 +62,20 @@
       },
       {
         "id": "size",
-        "type": "Symbol",
-        "name": "Editor Size",
-        "description": "The size of the editor - either 'singleLine' or 'multiline'",
-        "default": "multiline"
+        "type": "Enum",
+        "name": "Size",
+        "description": "The size of the button",
+        "default": "singleLine",
+        "options": [
+          {
+            "label": "Single Line",
+            "value": "singleLine"
+          },
+          {
+            "label": "Multiline",
+            "value": "multiline"
+          }
+        ]
       }
     ]
   }

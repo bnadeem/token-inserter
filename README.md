@@ -221,6 +221,14 @@ Field-specific parameters configured when adding the app to individual fields:
 | `dialogTitle` | Dialog Title | Short text | Title shown in the token selection dialog |
 | `size` | Size | Select | Button size (small, medium, large) |
 
+### Size Parameter Configuration
+
+When setting up the size parameter, you'll need to configure it as a Select field with dropdown options:
+
+![Size Parameter Dropdown Configuration](screenshots/size-parameter-dropdown-config.png)
+
+*Configuration screen for the size parameter showing how to set up the dropdown options (Single Line/singleLine and Multiline/multiline) for button size selection*
+
 ### Parameter Examples
 
 **Instance Parameters:**
