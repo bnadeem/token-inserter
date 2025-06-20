@@ -18,13 +18,11 @@ class TokenBlot extends Embed {
         node.title = value.type.name;
 
         // Color by type
-        if (value.type.id === 'RP') {
+        if (value.type && value.type.color) {
             node.style.background = value.type.color;
-            node.style.color = 'black';     // teal text
-        } else if (value.type.id === 'AB') {
-            node.style.background = value.type.color;
-            node.style.color = 'black';      // deep orange text
+            node.style.color = 'black'; // Set text color for contrast
         }
+        
         node.style.padding = '2px 8px';
         node.style.borderRadius = '6px';
         node.style.margin = '0 2px';
